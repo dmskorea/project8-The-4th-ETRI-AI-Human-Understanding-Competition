@@ -5,6 +5,7 @@
 | 19 |         |  0.5627 | baseline model 점수, 컬럼수 226개, TOP1 변수중요도-수면시간 |
 
 
+### 타겟 EDA
 	기상직후수면의질	취침전신체적피로	취침전스트레스	총수면시간	수면효율	수면잠들기시간	
 	1: 평균이상	1: 낮은피로	1: 낮은스트레스		1: 가이드준수	1: 가이드준수	
 행 레이블	평균 : Q1	평균 : Q2	평균 : Q3	평균 : S1	평균 : S2	평균 : S3	
@@ -19,8 +20,7 @@ id03	84.8%	81.8%	72.7%	106.1%	51.5%	48.5%	가이드를 미준수했는데 수면
 id10	48.5%	54.5%	63.6%	60.6%	36.4%	48.5%	
 id05	61.4%	43.2%	68.2%	63.6%	25.0%	13.6%	
 총합계	49.6%	56.2%	60.0%	86.7%	65.1%	66.2%	
-![image](https://github.com/user-attachments/assets/02a3559f-eed4-482a-9d1f-c133b174f42c)
-![image](https://github.com/user-attachments/assets/032a96b2-5b8b-450d-922d-95c4227ad57f)
+![image](https://github.com/user-attachments/assets/02a3559f-eed4-482a-9d1f-c133b174f42c
 
 
 
