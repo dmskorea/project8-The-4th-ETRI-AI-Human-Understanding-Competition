@@ -6,8 +6,7 @@
 
 
 ### 타겟 EDA
-![image](https://github.com/user-attachments/assets/92966ea6-1505-472d-866e-0688178044d5)
-
+![image](https://github.com/user-attachments/assets/dabe2b46-e464-4817-b34d-4a12b1877ac6)
 
 ### 학습           
 |       타겟     |  평균  |
