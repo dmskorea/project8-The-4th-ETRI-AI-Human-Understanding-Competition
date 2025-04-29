@@ -1,10 +1,10 @@
-### 리더보드 
+### 📦리더보드 
 
 | #  |  valid  |  test   |         내용            | 
 |----|---------|---------|-------------------------|
 | 19 |         |  0.5627 | baseline model 점수, 컬럼수 226개, TOP1 변수중요도-수면시간 |
 
-### train/valid/test 분할 실험 
+### 📦train/valid/test 분할 실험 
 
 - subject_id별로 test와 겹치지 않는 기간을 train set, test 겹치는 기간은 valid set 으로 설정 
 
@@ -21,10 +21,10 @@
 | id09 | 07-01 ~ 08-04 (34일) | 08-05 ~ 09-03 (29일) | 08-05 ~ 09-21 (47일) |
 | id10 | 07-06 ~ 08-03 (28일) | 08-04 ~ 09-14 (41일) | 08-04 ~ 09-26 (53일) |
 
-### 타겟 EDA
+### 📦타겟 EDA
 ![image](https://github.com/user-attachments/assets/8325d54d-a7fc-4007-b786-f8e8f208daf0)
 
-### 타겟 평균           
+### 📦타겟 평균           
 |  타겟 |  학 습 | 테스트 |
 |-------|--------|--------|
 |   Q1  |   50%  |  16%   |
@@ -34,7 +34,7 @@
 |   S2  |   65%  |  61%   |
 |   S3  |   66%  |  65%   |
 
-### 평가지표 
+### 📦평가지표 
 > Q1: 기상 직후 본인이 인지한 전반적인 수면의 질
  - 0: 개인 평균 이하
  - 1: 개인 평균 이상
@@ -60,7 +60,7 @@
  - 0: 가이드라인 미준수 
  - 1: 가이드라인 준수
 
-### 참고자료 
+### 📦참고자료 
 - 1등. 통못자핫도그 (PixleepFlow) – https://github.com/seongjiko/Pixleep 
 - 2등. 민바 (TraM) – https://github.com/jin-jae/ETRI-Paper-Contest 
 - 3등. VLAB – https://github.com/pknu-v-lab/ETRI_lifelogs 
