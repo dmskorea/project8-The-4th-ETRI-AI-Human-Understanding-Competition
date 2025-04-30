@@ -1,3 +1,7 @@
+### 📦submmit 전략 
+1️⃣ 7:3으로 train/valid 분할해서 실험 검증 진행  
+2️⃣ submmit 할때는 valid 없이 train 100% 모델 학습 test predict 진행 후 submmit 진행 
+
 ### 📦리더보드 
 
 | #  |  valid  |  test   |         내용            | 
