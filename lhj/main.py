@@ -57,7 +57,7 @@ def main(
 
 
 if __name__ == "__main__":
-    dataset_version = "v0"
-    trainer_version = "v0"
+    dataset_version = "v1"
+    trainer_version = "v1"
 
     main(dataset_version, trainer_version)

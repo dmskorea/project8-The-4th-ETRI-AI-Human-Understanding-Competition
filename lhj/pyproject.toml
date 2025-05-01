@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastparquet>=2024.11.0",
+    "lightgbm>=4.6.0",
     "pandas>=2.2.3",
     "pyarrow>=20.0.0",
     "scikit-learn>=1.6.1",
