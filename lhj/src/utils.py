@@ -36,6 +36,8 @@ def load_data(data_type: DataType, base_dir=DEFAULT_BASE_DIR) -> pd.DataFrame:
     if not file_path.exists():
         raise FileNotFoundError(f"File not found: {file_path}")
     df = pd.read_parquet(file_path)
+    df["subject_id"] = df["subject_id"].astype("category")
+    df["lifelog_date"] = pd.to_datetime(df["timestamp"]).dt.normalize()
     return df
 
 
