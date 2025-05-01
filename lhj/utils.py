@@ -32,7 +32,9 @@ def load_data(data_type: DataType, base_dir=DEFAULT_BASE_DIR) -> pd.DataFrame:
     Returns:
         pd.DataFrame: The loaded data as a DataFrame.
     """
-    file_path = Path(base_dir) / f"items/ch2025_{data_type.value}.parquet"
+    file_path = Path(base_dir) / f"ch2025_data_items/ch2025_{data_type.value}.parquet"
+    if not file_path.exists():
+        raise FileNotFoundError(f"File not found: {file_path}")
     df = pd.read_parquet(file_path)
     return df
 

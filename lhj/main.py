@@ -8,11 +8,13 @@ from utils import DataType, load_data, get_train_test_data
 m_ac_status_df = load_data(DataType.mACStatus)
 m_ac_status_df["m_charging"] = m_ac_status_df["m_charging"].astype("int64")
 # subject_id(object), timestamp(datetime64[ns]), m_charging (int64)
+print("ACStatus\n", m_ac_status_df.dtypes, "\n")
 
 #* Process mActivity
 m_activity_df = load_data(DataType.mActivity)
 m_activity_df["m_activity"] = m_activity_df["m_activity"].astype("int64")
 # subject_id(object), timestamp(datetime64[ns]), m_activity (int64)
+print("Activity\n", m_activity_df.dtypes, "\n")
 
 #* Process mAmbience
 m_ambience_df = load_data(DataType.mAmbience)
@@ -43,6 +45,7 @@ m_ambience_df = m_ambience_df.drop(columns=["labels", "probs"])
 m_ambience_df["loudest_label"] = m_ambience_df["loudest_label"].astype("category")
 # subject_id(object), timestamp(datetime64[ns]), loudest_label (category)
 # - loudest_label (category): Music
+print("Ambience\n", m_ambience_df.dtypes, "\n")
 
 #* Process mBle
 m_ble_df = load_data(DataType.mBle)
@@ -64,6 +67,7 @@ m_ble_df["closest_device_class"] = closest_device_classes
 m_ble_df = m_ble_df.drop(columns=["m_ble"])
 m_ble_df["closest_device_class"] = m_ble_df["closest_device_class"].astype("category")
 # subject_id(object), timestamp(datetime64[ns]), closest_device_class (category)
+print("BLE\n", m_ble_df.dtypes, "\n")
 
 
 #* Process mGps
@@ -78,16 +82,20 @@ m_gps_df["speed_var"] = m_gps_df["m_gps"].apply(
 m_gps_df = m_gps_df.drop(columns=["m_gps"])
 m_gps_df["speed_var"] = m_gps_df["speed_var"].astype("float64")
 # subject_id(object), timestamp(datetime64[ns]), speed_var (float64)
+print("GPS\n", m_gps_df.dtypes, "\n")
 
 #* Process mLight
 m_light_df = load_data(DataType.mLight)
 m_light_df["m_light"] = m_light_df["m_light"].astype("float64")
 # subject_id(object), timestamp(datetime64[ns]), m_light (float64)
+print("Light\n", m_light_df.dtypes, "\n")
+
 
 #* Process mScreenStatus
 m_screen_status_df = load_data(DataType.mScreenStatus)
 m_screen_status_df["m_screen_use"] = m_screen_status_df["m_screen_use"].astype("int64")
 # subject_id(object), timestamp(datetime64[ns]), m_screen_use (int64)
+print("ScreenStatus\n", m_screen_status_df.dtypes, "\n")
 
 #* Process mUsageStats
 m_usage_stats_df = load_data(DataType.mUsageStats)
@@ -107,6 +115,7 @@ for i in range(len(m_usage_stats_df)):
 m_usage_stats_df = m_usage_stats_df.drop(columns=["m_usage_stats"])
 m_usage_stats_df["most_used_app_name"] = pd.Series(most_used_app_names, dtype="category")
 # subject_id(object), timestamp(datetime64[ns]), most_used_app_name (category)
+print("UsageStats\n", m_usage_stats_df.dtypes, "\n")
 
 #* Process mWifi
 m_wifi_df = load_data(DataType.mWifi)
@@ -120,6 +129,7 @@ m_wifi_df["wifi_num"] = m_wifi_df["m_wifi"].apply(
 m_wifi_df = m_wifi_df.drop(columns=["m_wifi"])
 m_wifi_df["wifi_num"] = m_wifi_df["wifi_num"].astype("int64")
 # subject_id(object), timestamp(datetime64[ns]), wifi_num (int64)
+print("Wifi\n", m_wifi_df.dtypes, "\n")
 
 #* Process wHr
 w_hr_df = load_data(DataType.wHr)
@@ -131,12 +141,13 @@ w_hr_df["mean"] = w_hr_df["heart_rate"].apply(lambda x: pd.Series(x).mean()).ast
 w_hr_df["std"] = w_hr_df["heart_rate"].apply(lambda x: pd.Series(x).std()).astype("float64")
 w_hr_df = w_hr_df.drop(columns=["heart_rate"])
 # subject_id(object), timestamp(datetime64[ns]), mean (float64), std (float64)
-
+print("HR\n", w_hr_df.dtypes, "\n")
 
 #* Process wLight
 w_light_df = load_data(DataType.wLight)
 w_light_df["w_light"] = w_light_df["w_light"].astype("float64")
 # subject_id(object), timestamp(datetime64[ns]), w_light (float64)
+print("Light\n", w_light_df.dtypes, "\n")
 
 #* Process wPedo
 w_pedo_df = load_data(DataType.wPedo)
@@ -148,7 +159,7 @@ w_pedo_df["distance"] = w_pedo_df["distance"].astype("float64")
 w_pedo_df["speed"] = w_pedo_df["speed"].astype("float64")
 w_pedo_df["burned_calories"] = w_pedo_df["burned_calories"].astype("float64")
 # subject_id(object), timestamp(datetime64[ns]), step, step_frequency, running_step, walking_step, distance, speed, burned_calories
-
+print("Pedo\n", w_pedo_df.dtypes, "\n")
 
 
 #* Gather rows to one row for a date
@@ -190,9 +201,12 @@ total_df = reduce(
     lambda left, right: pd.merge(left, right, on=["subject_id", "lifelog_date"], how="outer"),
     aggregated,
 )
+print("** Final Total Dataframe\n", total_df.dtypes)
 
 #* Split Data
 train_df, test_df = get_train_test_data()
+print("** Train Dataframe num", train_df.shape[0])
+print("** Test Dataframe num", test_df.shape[0])
 
 
 #* train
