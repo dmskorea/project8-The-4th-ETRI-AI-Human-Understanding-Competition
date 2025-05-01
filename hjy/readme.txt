@@ -2,6 +2,36 @@
 
 ☆ target lag feature 추가 lag -1 -2 -3 전날 건강상태 변수 
 
+ STEP1: 실험 결과 확인
+=============== Validation Results ==============
+[test_size=0.5] 평균 F1: 0.6284 / [상세] Q1(기상직후수면질):0.5217 Q2(취침전신체적피로):0.6517 Q3(취침전스트레스):0.6264 S2(수면효율):0.7184 S3(수면잠들기시간):0.8076 S1(S1):0.4448
+[test_size=0.3] 평균 F1: 0.6444 / [상세] Q1(기상직후수면질):0.5512 Q2(취침전신체적피로):0.6543 Q3(취침전스트레스):0.7052 S2(수면효율):0.7634 S3(수면잠들기시간):0.7514 S1(S1):0.4407
+[test_size=0.2] 평균 F1: 0.6421 / [상세] Q1(기상직후수면질):0.5934 Q2(취침전신체적피로):0.5981 Q3(취침전스트레스):0.6949 S2(수면효율):0.7541 S3(수면잠들기시간):0.7154 S1(S1):0.4968
+
+[iteration 변화 그래프 저장]
+# 전체 평균 F1: 0.6383
+================================================
+
+ STEP2: 전체 데이터로 모델 재학습
+====== modoling with 100% train & no valid =====
+[Q1] wake_time_hhmm_y(523), lat_change(361), 메신저_time(355), sleep_duration_min_y(330), 통화_time(299), rssi_mean_sleeptime(283), speed_max(282), light_night_mean(277), hr_morning_above_100_ratio(269), avg_rssi(257)
+[Q2] unique_app_count(325), total_distance_m(308), screen_time_vs_avg_pct(308), rssi_mean_afterwork(291), speed_le5_max(282), charging_ratio(255), 메신저_time(254), lat_change(254), wake_time_hhmm_x(249), 통화_time(246)
+[Q3] hr_evening_mean(362), 통화_time(348), light_mean(329), device_class_0_ratio_afterwork(303), unique_app_count(280), NAVER_time(280), total_screen_time(279), vehicle_minutes(271), hr_evening_max(263), sleep_time_hhmm_x(260)
+[S2] sleep_duration_min_y(395), avg_rssi(392), wake_time_hhmm_y(368), hr_morning_min(331), screen_time_vs_avg_pct(312), hr_afternoon_std(293), max_rssi(285), light_night_mean(255), screen_on_ratio(245), rssi_max_afterwork(241)
+[S3] max_rssi(485), avg_rssi(374), light_night_mean(349), 통화_time(310), lon_change(308), rssi_mean_afterwork(304), wake_time_hhmm_x(260), 전화_time(256), hr_afternoon_max(256), device_class_0_ratio_sleeptime(241)
+[S1] sleep_duration_min_y(1651), wake_time_hhmm_y(1246), rssi_mean_afterwork(767), rssi_max_sleeptime(720), worktime_entropy(664), sleep_duration_min_x(639), hour_span_minutes(586), rssi_mean_sleeptime(584), max_rssi(570), speed_le5_max(534)
+# submission_0.6383139645196975.csv 저장 완료
+================================================
+
+ STEP3: 예측결과 비교표
+학습sum	학습len	학습mean	테스트sum	테스트len	테스트mean
+Q1	223	450	0.4956	120	250	0.4800
+Q2	253	450	0.5622	158	250	0.6320
+Q3	270	450	0.6000	185	250	0.7400
+S1	390	450	0.8667	192	250	0.7680
+S2	293	450	0.6511	193	250	0.7720
+S3	298	450	0.6622	197	250	0.7880
+
 
 [a]
 낮에 활동지수 
