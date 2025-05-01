@@ -1,37 +1,50 @@
 ☆ 테스트 데이터와 유사한 검증 데이터셋 만들기 
-
 ☆ target lag feature 추가 lag -1 -2 -3 전날 건강상태 변수 
+
+[1]
+
+# X shape: (450, 210)
+# test_X shape: (250, 210)
 
  STEP1: 실험 결과 확인
 =============== Validation Results ==============
-[test_size=0.5] 평균 F1: 0.6284 / [상세] Q1(기상직후수면질):0.5217 Q2(취침전신체적피로):0.6517 Q3(취침전스트레스):0.6264 S2(수면효율):0.7184 S3(수면잠들기시간):0.8076 S1(S1):0.4448
-[test_size=0.3] 평균 F1: 0.6444 / [상세] Q1(기상직후수면질):0.5512 Q2(취침전신체적피로):0.6543 Q3(취침전스트레스):0.7052 S2(수면효율):0.7634 S3(수면잠들기시간):0.7514 S1(S1):0.4407
-[test_size=0.2] 평균 F1: 0.6421 / [상세] Q1(기상직후수면질):0.5934 Q2(취침전신체적피로):0.5981 Q3(취침전스트레스):0.6949 S2(수면효율):0.7541 S3(수면잠들기시간):0.7154 S1(S1):0.4968
+[test_size=0.5] 평균 F1: 0.6536 / [상세] Q1(기상직후수면질):0.5714 Q2(취침전신체적피로):0.6549 Q3(취침전스트레스):0.7267 S2(수면효율):0.7953 S3(수면잠들기시간):0.8012 S1(S1):0.3718
+[test_size=0.4] 평균 F1: 0.6614 / [상세] Q1(기상직후수면질):0.5629 Q2(취침전신체적피로):0.6781 Q3(취침전스트레스):0.7149 S2(수면효율):0.8015 S3(수면잠들기시간):0.7955 S1(S1):0.4155
+[test_size=0.3] 평균 F1: 0.6605 / [상세] Q1(기상직후수면질):0.5581 Q2(취침전신체적피로):0.6667 Q3(취침전스트레스):0.7363 S2(수면효율):0.7817 S3(수면잠들기시간):0.7822 S1(S1):0.4377
+[test_size=0.2] 평균 F1: 0.6709 / [상세] Q1(기상직후수면질):0.5952 Q2(취침전신체적피로):0.6226 Q3(취침전스트레스):0.7344 S2(수면효율):0.7692 S3(수면잠들기시간):0.8235 S1(S1):0.4807
+
+[best_iteration_dict]
+Q1: 496
+Q2: 408
+Q3: 344
+S2: 857
+S3: 641
+S1: 919
 
 [iteration 변화 그래프 저장]
-# 전체 평균 F1: 0.6383
+# 전체 평균 F1: 0.6616
 ================================================
 
  STEP2: 전체 데이터로 모델 재학습
 ====== modoling with 100% train & no valid =====
-[Q1] wake_time_hhmm_y(523), lat_change(361), 메신저_time(355), sleep_duration_min_y(330), 통화_time(299), rssi_mean_sleeptime(283), speed_max(282), light_night_mean(277), hr_morning_above_100_ratio(269), avg_rssi(257)
-[Q2] unique_app_count(325), total_distance_m(308), screen_time_vs_avg_pct(308), rssi_mean_afterwork(291), speed_le5_max(282), charging_ratio(255), 메신저_time(254), lat_change(254), wake_time_hhmm_x(249), 통화_time(246)
-[Q3] hr_evening_mean(362), 통화_time(348), light_mean(329), device_class_0_ratio_afterwork(303), unique_app_count(280), NAVER_time(280), total_screen_time(279), vehicle_minutes(271), hr_evening_max(263), sleep_time_hhmm_x(260)
-[S2] sleep_duration_min_y(395), avg_rssi(392), wake_time_hhmm_y(368), hr_morning_min(331), screen_time_vs_avg_pct(312), hr_afternoon_std(293), max_rssi(285), light_night_mean(255), screen_on_ratio(245), rssi_max_afterwork(241)
-[S3] max_rssi(485), avg_rssi(374), light_night_mean(349), 통화_time(310), lon_change(308), rssi_mean_afterwork(304), wake_time_hhmm_x(260), 전화_time(256), hr_afternoon_max(256), device_class_0_ratio_sleeptime(241)
-[S1] sleep_duration_min_y(1651), wake_time_hhmm_y(1246), rssi_mean_afterwork(767), rssi_max_sleeptime(720), worktime_entropy(664), sleep_duration_min_x(639), hour_span_minutes(586), rssi_mean_sleeptime(584), max_rssi(570), speed_le5_max(534)
-# submission_0.6383139645196975.csv 저장 완료
+[Q1] avg_rssi(352), device_class_others_ratio_worktime(343), sleep_duration_min_mScreenStatus(295), wake_time_min_mScreenStatus(274), rssi_mean_sleeptime(273), 통화_time(267), light_night_mean(267), device_class_0_ratio_worktime(253), hr_early_morning_std(246), walk_minutes(237)
+[Q2] speed_le5_max(273), total_screen_time(272), charging_ratio(241), Q2_te(216), walk_minutes(214), sleeptime_entropy(208), rssi_mean_afterwork(205), hr_afternoon_mean(204), afterwork_sum_human_related(176), activity_7_ratio(174)
+[Q3] device_class_0_ratio_afterwork(231), total_screen_time(207), unique_app_count(197), hr_evening_mean(196), screen_time_vs_avg_pct(191), rssi_mean_afterwork(183), OneUI홈_time(180), avg_rssi(162), wake_time_min_mScreenStatus(147), light_mean(145)
+[S2] avg_rssi(540), hr_morning_min(506), wake_time_min_mScreenStatus(502), sleeptime_entropy(473), afterwork_entropy(453), sleep_duration_min_mScreenStatus(440), 전화_time(436), screen_on_ratio(396), hr_morning_mean(395), worktime_entropy(381)
+[S3] max_rssi(449), wlight_evening_mean(388), device_class_0_ratio_sleeptime(366), rssi_mean_afterwork(364), wlight_early_morning_max(358), S3_te(351), rssi_min_afterwork(332), avg_rssi(329), sleep_time_min_min(299), sleeptime_entropy(277)
+[S1] sleep_duration_min_mScreenStatus(1479), wake_time_min_mScreenStatus(1371), rssi_mean_afterwork(1254), worktime_entropy(1198), hr_morning_min(1174), active_minutes(1088), rssi_max_sleeptime(1077), screen_on_duration_avg(973), total_screen_time(968), speed_le5_max(944)
+# submission_0.661585461523865.csv 저장 완료
+# submission shape:(250, 9)
 ================================================
 
  STEP3: 예측결과 비교표
 학습sum	학습len	학습mean	테스트sum	테스트len	테스트mean
-Q1	223	450	0.4956	120	250	0.4800
-Q2	253	450	0.5622	158	250	0.6320
-Q3	270	450	0.6000	185	250	0.7400
-S1	390	450	0.8667	192	250	0.7680
-S2	293	450	0.6511	193	250	0.7720
-S3	298	450	0.6622	197	250	0.7880
-
+Q1	223	450	0.4956	128	250	0.5120
+Q2	253	450	0.5622	174	250	0.6960
+Q3	270	450	0.6000	203	250	0.8120
+S1	390	450	0.8667	188	250	0.7520
+S2	293	450	0.6511	192	250	0.7680
+S3	298	450	0.6622	198	250	0.7920
 
 [a]
 낮에 활동지수 
