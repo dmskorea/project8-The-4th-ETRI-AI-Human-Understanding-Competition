@@ -53,9 +53,7 @@ def main(
     trainer_module = importlib.import_module(trainer_module_name)
 
     result = trainer_module.train(total_df)
-
-    # get trainer
-    pass
+    result.to_csv(train_dir / "result.csv", index=False)
 
 
 if __name__ == "__main__":
