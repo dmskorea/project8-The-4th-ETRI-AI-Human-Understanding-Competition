@@ -52,7 +52,7 @@ def main(
         raise FileNotFoundError(f"Trainer module not found: {trainer_module_path}")
     trainer_module = importlib.import_module(trainer_module_name)
 
-    result = trainer_module.train(total_df)
+    result = trainer_module.train(total_df, result_dir=train_dir)
     result.to_csv(train_dir / "result.csv", index=False)
 
 

@@ -1,12 +1,30 @@
+import os
+import json
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
-from sklearn.metrics import f1_score, classification_report
+from sklearn.metrics import f1_score, make_scorer
 from sklearn.preprocessing import OrdinalEncoder
 from lightgbm import LGBMClassifier
 
 from src.utils import get_train_test_data
+
+
+class EnhancedJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, (np.integer, np.floating)):
+            return obj.item()
+        if hasattr(obj, 'isoformat'):
+            return obj.isoformat()
+        try:
+            return super().default(obj)
+        except TypeError:
+            return str(obj)
 
 
 def get_macro_f1_score(y_true: np.ndarray, y_pred: np.ndarray) -> float:
@@ -51,7 +69,11 @@ def _train(
             'min_child_samples': [5, 10, 20, 50]
         },
         n_iter=10,
-        scoring=get_macro_f1_score,
+        scoring={
+            "macro_f1": get_macro_f1_score,
+            "auc": "roc_auc",
+        },
+        refit="macro_f1",
         cv=3,
         verbose=1,
         n_jobs=4,
@@ -72,6 +94,7 @@ def _train(
 
 def train(
     total_df: pd.DataFrame,
+    result_dir: str,
 ) -> pd.DataFrame:
     
     KEY_COLS = ["subject_id", "lifelog_date"]
@@ -94,6 +117,7 @@ def train(
     X_train = X_train.drop(columns=["subject_id"], errors="ignore")
     X_test = X_test.drop(columns=["subject_id"], errors="ignore")
 
+    metrics = {}
     for col in TARGET_COLS:
         print(f"Training model for {col}...")
         model, le = _train(
@@ -104,9 +128,18 @@ def train(
         print(f"Best params for {col}: {model.get_params()}")
         print(f"Best score for {col}: {model.best_score_}")
 
+        metrics[col] = {
+            "best_params": model.get_params(),
+            "best_score": model.best_score_,
+        }
+
         _x_test = X_test.copy()
         _x_test[CATEGORICAL_COLS] = le.transform(X_test[CATEGORICAL_COLS])
 
         test_df[col] = model.predict(_x_test)
+    
+    # save tratin results
+    with open(os.path.join(result_dir, "metrics.json"), "w") as f:
+        json.dump(metrics, f, indent=4, ensure_ascii=False, cls=EnhancedJSONEncoder)
 
     return test_df
