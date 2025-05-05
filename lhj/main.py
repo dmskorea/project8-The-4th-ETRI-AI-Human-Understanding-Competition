@@ -20,7 +20,7 @@ def get_result_dir(
 
 def main(
     dataset_version: str,
-    trainer_version: str
+    trainer_version: str = None,
 ):
     result_dir = get_result_dir(dataset_version)
 
@@ -36,12 +36,14 @@ def main(
     else:
         print("** Hash not found or dataset file has been changed. Load train/test data from source")
         dataset_module = importlib.import_module(dataset_module_name)
-        dataset = dataset_module.get_train_test_df()
+        dataset = dataset_module.get_train_test_df(result_dir=result_dir)
         pd.to_pickle(dataset, result_dir / "data.pkl")
         hash_path.write_text(data_hash)
 
-    total_df: pd.DataFrame = dataset
+    X_train, Y_train, X_test = dataset
 
+    if trainer_version is None:
+        return 
 
     train_dir = result_dir / "train" / trainer_version / datetime.now().strftime("%Y%m%d_%H%M%S")
     train_dir.mkdir(parents=True, exist_ok=True)
@@ -52,8 +54,8 @@ def main(
         raise FileNotFoundError(f"Trainer module not found: {trainer_module_path}")
     trainer_module = importlib.import_module(trainer_module_name)
 
-    result = trainer_module.train(total_df, result_dir=train_dir)
-    result.to_csv(train_dir / "result.csv", index=False)
+    result = trainer_module.train(X_train, Y_train, X_test, result_dir=train_dir)
+    result.to_csv(train_dir / f"{dataset_version}_{trainer_version}_result.csv", index=False)
 
 
 if __name__ == "__main__":

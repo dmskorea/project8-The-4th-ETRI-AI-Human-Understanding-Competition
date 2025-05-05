@@ -1,4 +1,5 @@
 from functools import reduce
+from pathlib import Path
 
 import pandas as pd
 import numpy as np
@@ -270,7 +271,7 @@ def get_wPedo_df() -> pd.DataFrame:
     return df
 
 
-def get_train_test_df() -> tuple[pd.DataFrame, pd.DataFrame]:
+def get_train_test_df(result_dir: str = None) -> tuple[pd.DataFrame, pd.DataFrame]:
     dfs = [
         get_mACStatus_df(),
         get_mActivity_df(),
@@ -291,5 +292,48 @@ def get_train_test_df() -> tuple[pd.DataFrame, pd.DataFrame]:
         lambda left, right: pd.merge(left, right, on=["subject_id", "lifelog_date"], how="outer"),
         dfs,
     )
+
+    result_dir = Path(result_dir or "./results/")
+
+    total_df.to_csv(Path(result_dir) / "total_df.csv", index=False)
+
+    KEY_COLS = ["subject_id", "lifelog_date"]
+    TARGET_COLS = ["Q1", "Q2", "Q3", "S1", "S2", "S3"]
+    CATEGORICAL_COLS = list(set([
+        col for col in total_df.columns if total_df[col].dtype == "category"
+    ]) - set(KEY_COLS + TARGET_COLS))
+
+    train_df, test_df = get_train_test_data()
     
-    return total_df
+    X_train = train_df.merge(total_df, on=KEY_COLS, how="left")
+    X_train.drop(columns=TARGET_COLS, errors="ignore", inplace=True)
+    Y_train = train_df[TARGET_COLS]
+
+    X_test = test_df.merge(total_df, on=KEY_COLS, how="left")
+    X_test.drop(columns=TARGET_COLS, errors="ignore", inplace=True)
+
+    X_train.to_csv(Path(result_dir) / "X_train.csv", index=False)
+    Y_train.to_csv(Path(result_dir) / "Y_train.csv", index=False)
+    X_test.to_csv(Path(result_dir) / "X_test.csv", index=False)
+
+    eda(total_df, result_dir=result_dir / "eda")
+
+    return (
+        X_train,
+        Y_train,
+        X_test,
+    )
+
+
+def eda(df: pd.DataFrame, result_dir: str) -> None:
+    from ydata_profiling import ProfileReport
+    ProfileReport(df, title='EDA').to_file(Path(result_dir) / "eda_report.html")
+
+
+if __name__ == "__main__":
+    # total_df = get_train_test_df(result_dir="results/v1")
+    X_train, Y_train = pd.read_csv("results/v1/X_train.csv"), pd.read_csv("results/v1/Y_train.csv")
+
+    Y_train[["subject_id", "lifelog_date"]] = X_train[["subject_id", "lifelog_date"]]
+    train_data = pd.merge(X_train, Y_train, on=["subject_id", "lifelog_date"], how="left")
+    eda(train_data, result_dir="results/v1/eda")

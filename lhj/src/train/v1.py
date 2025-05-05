@@ -93,26 +93,22 @@ def _train(
 
 
 def train(
-    total_df: pd.DataFrame,
+    X_train: pd.DataFrame,
+    Y_train: pd.DataFrame,
+    X_test: pd.DataFrame,
     result_dir: str,
 ) -> pd.DataFrame:
     
     KEY_COLS = ["subject_id", "lifelog_date"]
     TARGET_COLS = ["Q1", "Q2", "Q3", "S1", "S2", "S3"]
     CATEGORICAL_COLS = list(set([
-        col for col in total_df.columns if total_df[col].dtype == "category"
+        col for col in X_train.columns if X_train[col].dtype == "category"
     ]) - set(KEY_COLS + TARGET_COLS))
 
-    processed_df = total_df.copy()
+    _, test_df = get_train_test_data()
 
-    train_df, test_df = get_train_test_data()
-
-    X_train = train_df.merge(processed_df, on=KEY_COLS, how="left")
-    X_train.drop(columns=KEY_COLS + TARGET_COLS + ["sleep_date"], errors="ignore", inplace=True)
-    Y_train = train_df[TARGET_COLS]
-
-    X_test = test_df.merge(processed_df, on=KEY_COLS, how="left")
-    X_test.drop(columns=KEY_COLS + TARGET_COLS + ["sleep_date"], errors="ignore", inplace=True)
+    X_train.drop(columns=KEY_COLS + ["sleep_date"], errors="ignore", inplace=True)
+    X_test.drop(columns=KEY_COLS + ["sleep_date"], errors="ignore", inplace=True)
 
     X_train = X_train.drop(columns=["subject_id"], errors="ignore")
     X_test = X_test.drop(columns=["subject_id"], errors="ignore")
