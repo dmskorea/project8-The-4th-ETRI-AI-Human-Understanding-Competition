@@ -305,15 +305,34 @@ def get_train_test_df(result_dir: str = None) -> tuple[pd.DataFrame, pd.DataFram
 
     train_df, test_df = get_train_test_data()
     
+    valid_chunks = []
+
+    for subject_id, group in train_df.groupby("subject_id", sort=False, observed=True):
+        valid_chunks.append(group.sample(frac=0.3, random_state=42))
+
+    # now concatenate all dev‐chunks in one go
+    valid_df = pd.concat(valid_chunks, ignore_index=False)
+
+    # remove those rows from train_df
+    train_df = train_df.drop(valid_df.index)
+
     X_train = train_df.merge(total_df, on=KEY_COLS, how="left")
     X_train.drop(columns=TARGET_COLS, errors="ignore", inplace=True)
-    Y_train = train_df[TARGET_COLS]
+    Y_train = train_df[KEY_COLS].copy()
+    Y_train[TARGET_COLS] = train_df[TARGET_COLS]
+
+    X_valid = valid_df.merge(total_df, on=KEY_COLS, how="left")
+    X_valid.drop(columns=TARGET_COLS, errors="ignore", inplace=True)
+    Y_valid = valid_df[KEY_COLS].copy()
+    Y_valid[TARGET_COLS] = valid_df[TARGET_COLS]
 
     X_test = test_df.merge(total_df, on=KEY_COLS, how="left")
     X_test.drop(columns=TARGET_COLS, errors="ignore", inplace=True)
 
     X_train.to_csv(Path(result_dir) / "X_train.csv", index=False)
     Y_train.to_csv(Path(result_dir) / "Y_train.csv", index=False)
+    X_valid.to_csv(Path(result_dir) / "X_valid.csv", index=False)
+    Y_valid.to_csv(Path(result_dir) / "Y_valid.csv", index=False)
     X_test.to_csv(Path(result_dir) / "X_test.csv", index=False)
 
     eda(total_df, result_dir=result_dir / "eda")
@@ -321,12 +340,15 @@ def get_train_test_df(result_dir: str = None) -> tuple[pd.DataFrame, pd.DataFram
     return (
         X_train,
         Y_train,
+        X_valid,
+        Y_valid,
         X_test,
     )
 
 
 def eda(df: pd.DataFrame, result_dir: str) -> None:
     from ydata_profiling import ProfileReport
+    Path(result_dir).mkdir(parents=True, exist_ok=True)
     ProfileReport(df, title='EDA').to_file(Path(result_dir) / "eda_report.html")
 
 

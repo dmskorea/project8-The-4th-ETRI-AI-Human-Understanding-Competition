@@ -5,8 +5,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from sklearn.model_selection import train_test_split, RandomizedSearchCV
-from sklearn.metrics import f1_score, make_scorer
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.metrics import f1_score
 from sklearn.preprocessing import OrdinalEncoder
 from lightgbm import LGBMClassifier
 
@@ -41,27 +41,21 @@ def get_macro_f1_score(y_true: np.ndarray, y_pred: np.ndarray) -> float:
 def _train(
     x_train: pd.DataFrame,
     y_train: pd.DataFrame,
+    x_valid: pd.DataFrame,
+    y_valid: pd.DataFrame,
     categorical_cols: list,
-):
-    x_train, x_val, y_train, y_val = train_test_split(
-        x_train,
-        y_train,
-        test_size=0.2,
-        random_state=42,
-        stratify=y_train.values,
-    )
-    
+):  
     le = OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1)
     x_train[categorical_cols] = le.fit_transform(x_train[categorical_cols])
-    x_val[categorical_cols] = le.transform(x_val[categorical_cols])
+    x_valid[categorical_cols] = le.transform(x_valid[categorical_cols])
 
     search = RandomizedSearchCV(
         estimator=LGBMClassifier(),
         param_distributions={
-            'num_leaves': np.arange(20, 30, 10),
+            'num_leaves': np.arange(10, 50, 5),
             'max_depth': [-1],
-            'learning_rate': np.logspace(-3, -1, 5),
-            'n_estimators': np.arange(50, 500, 50),
+            'learning_rate': np.logspace(-4, -1, 5),
+            'n_estimators': np.arange(100, 1000, 100),
             'subsample': [0.6, 0.8, 1.0],
             'colsample_bytree': [0.6, 0.8, 1.0],
             'reg_alpha': [0.0, 0.1, 0.5, 1.0],
@@ -83,7 +77,7 @@ def _train(
     search.fit(
         x_train,
         y_train,
-        eval_set=[(x_val, y_val)],
+        eval_set=[(x_valid, y_valid)],
         eval_metric=get_macro_f1_score,
     )
 
@@ -95,9 +89,11 @@ def _train(
 def train(
     X_train: pd.DataFrame,
     Y_train: pd.DataFrame,
+    X_valid: pd.DataFrame,
+    Y_valid: pd.DataFrame,
     X_test: pd.DataFrame,
     result_dir: str,
-) -> pd.DataFrame:
+):
     
     KEY_COLS = ["subject_id", "lifelog_date"]
     TARGET_COLS = ["Q1", "Q2", "Q3", "S1", "S2", "S3"]
@@ -107,11 +103,9 @@ def train(
 
     _, test_df = get_train_test_data()
 
-    X_train.drop(columns=KEY_COLS + ["sleep_date"], errors="ignore", inplace=True)
-    X_test.drop(columns=KEY_COLS + ["sleep_date"], errors="ignore", inplace=True)
-
-    X_train = X_train.drop(columns=["subject_id"], errors="ignore")
-    X_test = X_test.drop(columns=["subject_id"], errors="ignore")
+    X_train = X_train.drop(columns=KEY_COLS + ["sleep_date", "subject_id"], errors="ignore")
+    X_valid = X_valid.drop(columns=KEY_COLS + ["sleep_date", "subject_id"], errors="ignore")
+    X_test = X_test.drop(columns=KEY_COLS + ["sleep_date", "subject_id"], errors="ignore")
 
     metrics = {}
     for col in TARGET_COLS:
@@ -119,6 +113,8 @@ def train(
         model, le = _train(
             x_train=X_train,
             y_train=Y_train[col],
+            x_valid=X_valid,
+            y_valid=Y_valid[col],
             categorical_cols=CATEGORICAL_COLS,
         )
         print(f"Best params for {col}: {model.get_params()}")
@@ -134,8 +130,13 @@ def train(
 
         test_df[col] = model.predict(_x_test)
     
+    f1_scores = []
+    for col in TARGET_COLS:
+        f1_scores.append(metrics[col]['best_score']['valid_0']['macro_f1'])
+    metrics["macro_f1"] = np.mean(f1_scores)
+
     # save tratin results
     with open(os.path.join(result_dir, "metrics.json"), "w") as f:
         json.dump(metrics, f, indent=4, ensure_ascii=False, cls=EnhancedJSONEncoder)
 
-    return test_df
+    test_df.to_csv(result_dir / f"submission_val_{metrics['macro_f1']:.6f}.csv", index=False)

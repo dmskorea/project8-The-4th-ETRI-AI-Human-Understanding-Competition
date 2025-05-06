@@ -40,7 +40,7 @@ def main(
         pd.to_pickle(dataset, result_dir / "data.pkl")
         hash_path.write_text(data_hash)
 
-    X_train, Y_train, X_test = dataset
+    X_train, Y_train, X_valid, Y_valid, X_test = dataset
 
     if trainer_version is None:
         return 
@@ -54,8 +54,7 @@ def main(
         raise FileNotFoundError(f"Trainer module not found: {trainer_module_path}")
     trainer_module = importlib.import_module(trainer_module_name)
 
-    result = trainer_module.train(X_train, Y_train, X_test, result_dir=train_dir)
-    result.to_csv(train_dir / f"{dataset_version}_{trainer_version}_result.csv", index=False)
+    result = trainer_module.train(X_train, Y_train, X_valid, Y_valid, X_test, result_dir=train_dir)
 
 
 if __name__ == "__main__":
