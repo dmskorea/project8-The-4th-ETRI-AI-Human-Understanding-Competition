@@ -38,6 +38,22 @@ def load_data(data_type: DataType, base_dir=DEFAULT_BASE_DIR) -> pd.DataFrame:
     df = pd.read_parquet(file_path)
     df["subject_id"] = df["subject_id"].astype("category")
     df["lifelog_date"] = pd.to_datetime(df["timestamp"]).dt.normalize()
+    df["month"] = df["timestamp"].dt.month
+    df["day"] = df["timestamp"].dt.day
+    df["hour"] = df["timestamp"].dt.hour
+    df["minute"] = df["timestamp"].dt.minute
+    df["weekday"] = df["timestamp"].dt.weekday
+    colums = df.columns.tolist()
+    colums.remove("subject_id")
+    colums.remove("lifelog_date")
+    colums.remove("timestamp")
+    colums.remove("month")
+    colums.remove("day")
+    colums.remove("hour")
+    colums.remove("minute")
+    colums.remove("weekday")
+    colums = ["subject_id", "lifelog_date", "timestamp", "month", "day", "hour", "minute", "weekday"] + colums
+    df = df[colums]
     return df
 
 
