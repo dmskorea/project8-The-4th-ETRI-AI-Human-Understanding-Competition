@@ -628,7 +628,7 @@ def get_train_test_df(result_dir: str = None) -> tuple[pd.DataFrame, pd.DataFram
 
     result_dir = Path(result_dir or "./results/")
 
-    total_df.to_csv(Path(result_dir) / "total_df.csv", index=False)
+    total_df.to_parquet(Path(result_dir) / "total_df.parquet", index=False)
 
     KEY_COLS = ["subject_id", "lifelog_date"]
     TARGET_COLS = ["Q1", "Q2", "Q3", "S1", "S2", "S3"]
@@ -662,11 +662,11 @@ def get_train_test_df(result_dir: str = None) -> tuple[pd.DataFrame, pd.DataFram
     X_test = test_df.merge(total_df, on=KEY_COLS, how="left")
     X_test.drop(columns=TARGET_COLS, errors="ignore", inplace=True)
 
-    X_train.to_csv(Path(result_dir) / "X_train.csv", index=False)
-    Y_train.to_csv(Path(result_dir) / "Y_train.csv", index=False)
-    X_valid.to_csv(Path(result_dir) / "X_valid.csv", index=False)
-    Y_valid.to_csv(Path(result_dir) / "Y_valid.csv", index=False)
-    X_test.to_csv(Path(result_dir) / "X_test.csv", index=False)
+    X_train.to_parquet(Path(result_dir) / "X_train.parquet", index=False)
+    Y_train.to_parquet(Path(result_dir) / "Y_train.parquet", index=False)
+    X_valid.to_parquet(Path(result_dir) / "X_valid.parquet", index=False)
+    Y_valid.to_parquet(Path(result_dir) / "Y_valid.parquet", index=False)
+    X_test.to_parquet(Path(result_dir) / "X_test.parquet", index=False)
 
     eda(
         df=pd.merge(X_train, Y_train, on=KEY_COLS, how="left"),

@@ -294,17 +294,17 @@ def get_mScreenStatus_df() -> pd.DataFrame:
 
     def inner(df):
         if len(df) == 0:
-            screen_use_first_most = 0
-            screen_use_second_most = 0
+            screen_on_ratio = 0.
+            screen_state_changed = 0
         else:
-            uses = df["m_screen_use"].astype("int").values
+            uses = df["m_screen_use"].astype("int32").values
             screen_on_ratio = sum(uses) / len(uses) if len(uses) > 0 else 0.0
             screen_state_changed = np.sum(np.diff(uses) == 1) if len(uses) > 1 else 0
             
-            return pd.Series({
-                "screen_on_ratio": screen_on_ratio, 
-                "screen_state_changed": screen_state_changed
-            })
+        return pd.Series({
+            "screen_on_ratio": screen_on_ratio, 
+            "screen_state_changed": screen_state_changed
+        })
 
     sdf = (
         df[df["hour"].isin(MIGHT_SLEEP_HOURS)]
@@ -619,7 +619,7 @@ def get_train_test_df(result_dir: str = None) -> tuple[pd.DataFrame, pd.DataFram
 
     result_dir = Path(result_dir or "./results/")
 
-    total_df.to_csv(Path(result_dir) / "total_df.csv", index=False)
+    total_df.to_parquet(Path(result_dir) / "total_df.parquet", index=False)
 
     KEY_COLS = ["subject_id", "lifelog_date"]
     TARGET_COLS = ["Q1", "Q2", "Q3", "S1", "S2", "S3"]
@@ -653,11 +653,11 @@ def get_train_test_df(result_dir: str = None) -> tuple[pd.DataFrame, pd.DataFram
     X_test = test_df.merge(total_df, on=KEY_COLS, how="left")
     X_test.drop(columns=TARGET_COLS, errors="ignore", inplace=True)
 
-    X_train.to_csv(Path(result_dir) / "X_train.csv", index=False)
-    Y_train.to_csv(Path(result_dir) / "Y_train.csv", index=False)
-    X_valid.to_csv(Path(result_dir) / "X_valid.csv", index=False)
-    Y_valid.to_csv(Path(result_dir) / "Y_valid.csv", index=False)
-    X_test.to_csv(Path(result_dir) / "X_test.csv", index=False)
+    X_train.to_parquet(Path(result_dir) / "X_train.parquet", index=False)
+    Y_train.to_parquet(Path(result_dir) / "Y_train.parquet", index=False)
+    X_valid.to_parquet(Path(result_dir) / "X_valid.parquet", index=False)
+    Y_valid.to_parquet(Path(result_dir) / "Y_valid.parquet", index=False)
+    X_test.to_parquet(Path(result_dir) / "X_test.parquet", index=False)
 
     eda(
         df=pd.merge(X_train, Y_train, on=KEY_COLS, how="left"),
@@ -678,12 +678,3 @@ def eda(df: pd.DataFrame, result_dir: str) -> None:
     # Path(result_dir).mkdir(parents=True, exist_ok=True)
     # ProfileReport(df, title='EDA').to_file(Path(result_dir) / "eda_report.html")
     pass
-
-
-if __name__ == "__main__":
-    # total_df = get_train_test_df(result_dir="results/v1")
-    X_train, Y_train = pd.read_csv("results/v1/X_train.csv"), pd.read_csv("results/v1/Y_train.csv")
-
-    Y_train[["subject_id", "lifelog_date"]] = X_train[["subject_id", "lifelog_date"]]
-    train_data = pd.merge(X_train, Y_train, on=["subject_id", "lifelog_date"], how="left")
-    eda(train_data, result_dir="results/v1/eda")
