@@ -2,6 +2,22 @@
 ☆ target lag feature 추가 lag -1 -2 -3 전날 건강상태 변수 
 ☆ id06 S1준수o vs id08 S1준수x
 
+
+[평균 이미지 비교]
+
+전처리 내용 
+Sleeptime 00-05 
+Numeric  binary 처리 (instead of 스케일) 
+
+AB테스트 
+-  ID: Id06, Id08
+-  시간 : 금토일 vs 월화수목 
+
+모든 변수에 대한 이미지에 대해서 AB테스트 진행 
+2개 이미지가 식별이 가능한 변수만 최종 변수로 선택 
+
+
+
 # backbone_name='resnext101_32x32d'
 # backbone_name='resnet18'
 # resnet34	resnet18보다 깊지만 속도 손해 적음
