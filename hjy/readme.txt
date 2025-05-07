@@ -1,5 +1,6 @@
 ☆ 테스트 데이터와 유사한 검증 데이터셋 만들기 
 ☆ target lag feature 추가 lag -1 -2 -3 전날 건강상태 변수 
+☆ id06 S1준수o vs id08 S1준수x
 
 # backbone_name='resnext101_32x32d'
 # backbone_name='resnet18'
