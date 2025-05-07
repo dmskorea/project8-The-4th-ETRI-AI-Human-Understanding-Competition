@@ -1,3 +1,10 @@
+### S1(수면시간)
+
+S1이 2를 받는 경우 (금,토,일) 가능성 높음  
+
+예시) id01 <br>
+![image](https://github.com/user-attachments/assets/78cc7346-301f-48d0-880e-68e69118aa0c)
+
 ### 📦submit 전략 
 1️⃣ 7:3으로 train/valid 분할해서 실험 검증 진행  
 2️⃣ submit 할때는 valid 없이 train 100% 모델 학습 test predict 진행 후 submmit 진행 
