@@ -1,9 +1,13 @@
-### S1(수면시간)
+### 📦 S1(수면시간)
 
 S1이 2를 받는 경우 (금,토,일) 가능성 높음  
 
 예시) id01 <br>
 ![image](https://github.com/user-attachments/assets/c620bc89-3f41-4144-b3c4-57b38c01613d)
+
+예시) id02 <br>
+![image](https://github.com/user-attachments/assets/35021940-1f4e-4cf5-be61-6b6acdcb8b68)
+
 
 ### 📦submit 전략 
 1️⃣ 7:3으로 train/valid 분할해서 실험 검증 진행  
