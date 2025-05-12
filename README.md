@@ -15,6 +15,8 @@
 
 ![image](https://github.com/user-attachments/assets/8e81a314-520b-4953-a44b-dacec57e8040)
 
+![image](https://github.com/user-attachments/assets/345c8acc-ac35-4f1d-81fd-70161c43d8d6)
+
 
 ### 📦평가지표 
 > Q1: 기상 직후 본인이 인지한 전반적인 수면의 질
