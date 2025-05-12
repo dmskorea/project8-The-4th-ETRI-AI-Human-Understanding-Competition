@@ -15,6 +15,10 @@
 [2] S1(level=2) 분포  
 ![image](https://github.com/user-attachments/assets/8337cefd-7b5b-43ff-b0c8-519e67f3d62a)
 
+[3] 수면시간 관련 파생변수 
+![image](https://github.com/user-attachments/assets/b5243181-832c-4b8d-81ed-07f1d139f0f3)
+
+
 ### 📦타겟 EDA
 ![image](https://github.com/user-attachments/assets/8325d54d-a7fc-4007-b786-f8e8f208daf0)
 
