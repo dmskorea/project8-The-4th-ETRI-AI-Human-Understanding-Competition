@@ -7,7 +7,7 @@ from sklearn.metrics import f1_score
 
 def _build_target_subset(
     target: pd.DataFrame,
-    test_splits: list[tuple[str, pd.Timestamp, pd.Timestamp]],
+    sleep_dates: list[tuple[str, pd.Timestamp, pd.Timestamp]],
 ) -> pd.DataFrame:
     """
     Vectorised construction of the target subset for **all** test-splits.
@@ -16,8 +16,8 @@ def _build_target_subset(
     # Build a boolean mask for every split, then OR-reduce them column-wise
     target["sleep_date"] = target["sleep_date"].astype("datetime64[ns]")
     masks = [
-        (target["subject_id"] == subj) & target["sleep_date"].between(pd.Timestamp(start), pd.Timestamp(end))
-        for subj, start, end in test_splits
+        (target["subject_id"] == subj) & (target["sleep_date"] == date)
+        for subj, date in sleep_dates
     ]
     combined_mask = pd.concat(masks, axis=1).any(axis=1)
     return target.loc[combined_mask]
@@ -26,12 +26,12 @@ def _build_target_subset(
 def evaluate(
     submission: pd.DataFrame,
     target: pd.DataFrame,
-    test_splits: list[tuple[str, pd.Timestamp, pd.Timestamp]],
+    sleep_dates: list[tuple[str, pd.Timestamp]],
     eval_function: Callable[[pd.Series, pd.Series], float],
 ) -> dict[str, float]:
     """
     Evaluate a submission against the ground-truth `target`
-    on the requested `test_splits` and return per-label
+    on the requested `sleep_dates` and return per-label
     and macro-averaged F1 (or any metric supplied).
     """
     submission = submission.astype(
@@ -47,7 +47,7 @@ def evaluate(
         }
     )
 
-    target_df = _build_target_subset(target, test_splits)
+    target_df = _build_target_subset(target, sleep_dates)
 
     # Align submission with target in a single hash-join merge
     aligned = (
@@ -90,24 +90,36 @@ import inspect
 import streamlit as st
 
 TARGET_PATH = "ch2025_metrics_train.csv"
+TARGET_DATES_PATH = "eval_dates.txt"
+
+
+def set_dates(sleep_date_string=None) -> list[tuple[str, pd.Timestamp]]:
+    sleep_date_string = sleep_date_string or st.session_state["sleep_date_string"]
+    sleep_dates = []
+    for line in sleep_date_string.split("\n"):
+        if line.strip():
+            subject_id, date = line.split(",")
+            date = pd.to_datetime(date).strftime("%Y-%m-%d")
+            sleep_dates.append((subject_id, date))
+    st.session_state["sleep_dates"] = sleep_dates
+    st.session_state["sleep_date_string"] = sleep_date_string
+    print(sleep_dates)
+
 
 if "sleep_dates" not in st.session_state:
     target = pd.read_csv(TARGET_PATH)
 
-    sleep_dates = {
+    sleep_dates_min_max = {
         subject_id: (
             group["sleep_date"].min(),
             group["sleep_date"].max(),
         ) for subject_id, group in target.groupby("subject_id")
     }
-    st.session_state["subject_ids"] = sorted(list(sleep_dates.keys()))
-    st.session_state["sleep_dates"] = sleep_dates
-    
-    for subject_id in st.session_state["subject_ids"]:
-        st.session_state[f"{subject_id}_sleep_date"] = (
-            pd.to_datetime(sleep_dates[subject_id][0]),
-            pd.to_datetime(sleep_dates[subject_id][1]),
-        )
+    st.session_state["subject_ids"] = sorted(list(sleep_dates_min_max.keys()))
+    st.session_state["sleep_dates_min_max"] = sleep_dates_min_max
+    st.session_state["sleep_date_string"] = open(TARGET_DATES_PATH, "r").read()
+    set_dates()
+
 
 st.title("단머스 모의 제출기")
 st.write("""
@@ -120,45 +132,24 @@ st.write("""
 """)
 
 
-def date_setting(prefix: str):
-    start_date, end_date = st.session_state["sleep_dates"][prefix]
-    st.date_input(
-        f"{prefix} 평가 대상 sleep_date",
-        min_value=start_date,
-        max_value=end_date,
-        key=f"{prefix}_sleep_date",
-    )
-
-def get_dates():
-    return [
-        [subject_id, *st.session_state[f"{subject_id}_sleep_date"]]
-        for subject_id in st.session_state["subject_ids"]
-    ]
-
-
-def set_dates(date_string: str) -> list[tuple[str, pd.Timestamp, pd.Timestamp]]:
-    for line in date_string.split("\n"):
-        if line.strip():
-            subject_id, start_date, end_date = line.split(",")
-            st.session_state[f"{subject_id}_sleep_date"] = (
-                pd.to_datetime(start_date),
-                pd.to_datetime(end_date),
-            )
-    print(st.session_state[f"{subject_id}_sleep_date"])
-
 
 with st.expander("기간 설정"):
     ids = st.session_state["subject_ids"]
-    for id in ids:
-        date_setting(id)
+    st.text_area(
+        "기간 설정",
+        key="sleep_date_string",
+        label_visibility="collapsed",
+        on_change=set_dates,
+        height=300,
+    )
 
 
-dates = get_dates()
 col1, col2 = st.columns(2)
 with col1:
+    sleep_dates = st.session_state["sleep_dates"]
     st.download_button(
         "기간 공유",
-        data="\n".join([f"{subject_id},{start_date},{end_date}" for subject_id, start_date, end_date in dates]),
+        data="\n".join([f"{subject_id},{date}" for subject_id, date in sleep_dates]),
         file_name="dates.txt",
         mime="text/plain"
     )
@@ -178,9 +169,10 @@ if submission is not None:
     submission = pd.read_csv(submission)
     target = pd.read_csv(TARGET_PATH)
 
+    sleep_dates = st.session_state["sleep_dates"]
     target = _build_target_subset(
         target,
-        get_dates(),
+        sleep_dates,
     )
 
     col1, col2 = st.columns(2)
@@ -201,7 +193,7 @@ if submission is not None:
             result = evaluate(
                 submission,
                 target,
-                dates,
+                sleep_dates,
                 eval_function,
             )
         st.success("평가 완료!")
