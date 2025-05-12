@@ -13,8 +13,7 @@
 - id01, id03, id05, id07, id10은 S1이 연속해서 발생하는 케이스 x ->  test 로 샘플 되었을 가능성 존재
 
 [2] S1(level=2) 분포  
-![image](https://github.com/user-attachments/assets/02bede22-da28-41d1-b8a5-457f0cad7324)
-
+![image](https://github.com/user-attachments/assets/8337cefd-7b5b-43ff-b0c8-519e67f3d62a)
 
 ### 📦타겟 EDA
 ![image](https://github.com/user-attachments/assets/8325d54d-a7fc-4007-b786-f8e8f208daf0)
