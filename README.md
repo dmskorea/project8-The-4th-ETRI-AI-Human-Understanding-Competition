@@ -10,8 +10,11 @@
 ### 📦타겟 EDA
 ![image](https://github.com/user-attachments/assets/8325d54d-a7fc-4007-b786-f8e8f208daf0)
 
-### 📦ID별 오차
+### 📦오차 탐색
 ![image](https://github.com/user-attachments/assets/5c999889-0843-401a-bbf2-bf15609c5141)
+
+![image](https://github.com/user-attachments/assets/8e81a314-520b-4953-a44b-dacec57e8040)
+
 
 ### 📦평가지표 
 > Q1: 기상 직후 본인이 인지한 전반적인 수면의 질
