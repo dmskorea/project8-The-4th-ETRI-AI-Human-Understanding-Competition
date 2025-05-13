@@ -15,7 +15,6 @@
 ### 📦 데이터 탐색
 
 - 휴가 : 1) 주중 2) 수명시간 > 평균수명시간+1hr 3) 기상시간+1hr>평균기상시간 4) 7-8월 5) id01, id03, id05, id07, id10 6) (금,토,일) 붙여서 휴가 7) 만약 S1이 있다면  전날 S1이 2인 경우
-- 
 - (불끈 시간 - 핸드폰 이용한 마지막 시간) / 추정 수면시간 = 추정 수면 효율 (S2) <br>
 
 - 평균 취침,기상,수면시간 <br>
@@ -26,7 +25,7 @@
 - id01, id03, id05, id07, id10은 S1이 연속해서 발생하는 케이스 x ->  test 로 샘플 되었을 가능성 존재
 
 [2] S1(level=2) 분포  
-![image](https://github.com/user-attachments/assets/8337cefd-7b5b-43ff-b0c8-519e67f3d62a)
+![image](https://github.com/user-attachments/assets/cf954df4-8183-4448-84a4-b124454351b8)
 
 [3] 수면시간 관련 파생변수 
 ![image](https://github.com/user-attachments/assets/b5243181-832c-4b8d-81ed-07f1d139f0f3)
