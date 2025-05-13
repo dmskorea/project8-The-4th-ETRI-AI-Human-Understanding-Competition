@@ -19,7 +19,8 @@
 [🔥] 
 - (불끈 시간 - 핸드폰 이용한 마지막 시간) / 추정 수면시간 = 추정 수면 효율 (S2) 
 
-[0] mScreenStatus 기반 id별 (평균) 취침, 기상, 수면시간
+[🔥] 
+- mScreenStatus 기반 id별 (평균) 취침, 기상, 수면시간
 ![image](https://github.com/user-attachments/assets/02945efe-ae9e-4ab1-b39d-34cbc76ec138)
 
 [1]
