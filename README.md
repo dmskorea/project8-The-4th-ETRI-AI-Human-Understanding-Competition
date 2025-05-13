@@ -4,6 +4,7 @@
 | #  |  valid  |  oof(k=5)  | test    |       내용       |          코드                  | 
 |----|---------|------------|--------|-------------------|--------------------------------|
 | -  |  0.6439 |   0.6612   | 0.61513| mLight기반 수면시간 파생변수 추가 | etri_baseline_v7141_v3_0_4.ipynb|
+| -  |  0.6383 |   -   | 0.61617|lightgbm -> catboost 모델변경 | dacon-etri-lifelog-best-score-baseline-v3.ipynb|
 | 1  |  0.6359 |   0.6620   | 0.62832| 취침전 앱사용통계 파생변수 추가 | etri_baseline_v7141_v3_0_3.ipynb|
 | 2  |  0.6322 |   0.6595   | 0.62305| 수면시간 평균 산출로직 변경  | etri_baseline_v7141_v3_0_2.ipynb|
 | 4  |  0.6308 |   0.6526   | 0.6176 | parameter common으로 변경  | etri_baseline_v7141_v3_0_1.ipynb|
