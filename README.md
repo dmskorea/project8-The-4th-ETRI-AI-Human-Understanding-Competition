@@ -20,9 +20,6 @@
 [🔥] 
 - (불끈 시간 - 핸드폰 이용한 마지막 시간) / 추정 수면시간 = 추정 수면 효율 (S2) 
 
-[🔥] 
-- mScreenStatus 기반 id별 (평균) 취침, 기상, 수면시간
-![image](https://github.com/user-attachments/assets/02945efe-ae9e-4ab1-b39d-34cbc76ec138)
 
 [1]
 - id02, id04, id06, id08, id09는 S1(수면의질)이 train 에서 연속해서 발생 (휴가기간)
