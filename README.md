@@ -21,27 +21,7 @@
 - (불끈 시간 - 핸드폰 이용한 마지막 시간) / 추정 수면시간 = 추정 수면 효율 (S2)
 
 [🔥] 평균 취침,기상,수면시간
-subject_id	week_type	평균 취침시간	평균 기상시간	평균 수면시간
-0	id01	weekday	22:42	05:55	429.2292
-1	id01	weekend	22:21	06:09	467.4500
-2	id02	weekday	22:54	07:13	496.0000
-3	id02	weekend	23:13	07:27	494.9583
-4	id03	weekday	00:21	09:03	457.4359
-5	id03	weekend	00:18	08:54	450.8667
-6	id04	weekday	00:03	06:50	396.6721
-7	id04	weekend	00:09	06:59	401.1739
-8	id05	weekday	22:52	07:25	500.1064
-9	id05	weekend	22:39	07:42	518.2778
-10	id06	weekday	23:56	08:30	505.7115
-11	id06	weekend	00:33	08:54	490.3500
-12	id07	weekday	00:08	07:16	424.9273
-13	id07	weekend	00:18	07:56	433.2500
-14	id08	weekday	01:35	08:22	360.4906
-15	id08	weekend	01:47	08:54	380.7619
-16	id09	weekday	00:08	07:47	358.4783
-17	id09	weekend	00:19	08:53	383.5294
-18	id10	weekday	01:45	08:25	369.9714
-19	id10	weekend	01:58	09:33	407.4444
+![image](https://github.com/user-attachments/assets/d375261c-ce69-4879-baee-4efe700747ad)
 
 [1]
 - id02, id04, id06, id08, id09는 S1(수면의질)이 train 에서 연속해서 발생 (휴가기간)
