@@ -23,6 +23,7 @@
 - (불끈 시간 - 핸드폰 이용한 마지막 시간) / 추정 수면시간 = 추정 수면 효율 (S2) <br>
 
 - 평균 취침,기상,수면시간 <br>
+
 ![image](https://github.com/user-attachments/assets/e88712f8-3087-4cfc-8199-d5f9b25718d6)
 
 [1]
