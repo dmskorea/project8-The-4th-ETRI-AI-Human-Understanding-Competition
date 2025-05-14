@@ -3,7 +3,7 @@
 
 | #  |  valid  |  oof(k=5)  | test    |       내용       |          코드                  | 
 |----|---------|------------|--------|-------------------|--------------------------------|
-| -  |  0.6419 |   0.6667   |        | ch5_sleeptime 이미지 파생변수 추가 | etri_baseline_v7141_v3_0_7.ipynb|
+| -  |  0.6419 |   0.6667   | 0.60828| ch5_sleeptime 이미지 파생변수 추가 | etri_baseline_v7141_v3_0_7.ipynb|
 | -  |  0.6376 |   0.6620   |        | 추정휴가 파생변수 추가 | etri_baseline_v7141_v3_0_6.ipynb|
 | -  |  0.6439 |   0.6612   | 0.61513| mLight기반 수면시간 파생변수 추가 | etri_baseline_v7141_v3_0_4.ipynb|
 | -  |  0.6383 |   -   | 0.61617|lightgbm -> catboost 모델변경 | dacon-etri-lifelog-best-score-baseline-v3.ipynb|
