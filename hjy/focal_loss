@@ -1,0 +1,83 @@
+import numpy as np
+import pandas as pd
+from lightgbm import LGBMClassifier, early_stopping
+import lightgbm as lgb
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import f1_score
+from category_encoders import TargetEncoder
+import torch
+import torch.nn.functional as F
+
+def focal_loss_lgb_multiclass(alpha=1.0, gamma=2.0, num_class=3):
+    def _focal_loss(preds, train_data):
+        y_true = train_data.get_label().astype(int)
+        preds = preds.reshape(num_class, -1).T  # (N, C)
+        preds = torch.tensor(preds, requires_grad=True)
+        y_true = torch.tensor(y_true)
+
+        log_probs = F.log_softmax(preds, dim=1)
+        probs = torch.exp(log_probs)
+        ce_loss = F.nll_loss(log_probs, y_true, reduction='none')
+        focal_factor = (1 - probs.gather(1, y_true.view(-1, 1)).squeeze()) ** gamma
+        loss = alpha * focal_factor * ce_loss
+        grad = torch.autograd.grad(loss.sum(), preds)[0].numpy().T.reshape(-1)
+        hess = np.ones_like(grad)  # approximation
+        return grad, hess
+    return _focal_loss
+
+def run_basemodel(...):
+    # --- 생략된 초기 설정 및 전처리 코드 유지 ---
+
+    # binary targets 학습
+    for col in targets_binary:
+        ...  # 기존 LGBMClassifier 학습 코드 유지
+
+    # S1 multiclass focal loss 적용
+    y = train_df['S1']
+    X_valid = train_df.loc[train_df['pk'].isin(valid_ids['pk']),X.columns.tolist()].reset_index(drop=True)
+    X_train = train_df.loc[~train_df['pk'].isin(valid_ids['pk']),X.columns.tolist()].reset_index(drop=True)
+    y_valid = y.loc[X_valid.index].reset_index(drop=True)
+    y_train = y.loc[X_train.index].reset_index(drop=True)
+
+    train_set = lgb.Dataset(X_train, label=y_train)
+    valid_set = lgb.Dataset(X_valid, label=y_valid)
+
+    best_param = best_param_dict['S1'].copy()
+    best_param.update({'num_class': 3, 'objective': 'multiclass', 'random_state': random_state})
+
+    model = lgb.train(
+        best_param,
+        train_set,
+        valid_sets=[train_set, valid_set],
+        fobj=focal_loss_lgb_multiclass(alpha=1.0, gamma=2.0, num_class=3),
+        num_boost_round=1000,
+        early_stopping_rounds=100 if early_stop else None,
+        verbose_eval=False
+    )
+
+    pred_valid = np.argmax(model.predict(X_valid), axis=1)
+    f1 = f1_score(y_valid, pred_valid, average='macro')
+    val_f1.append(f1)
+
+    # --- 이하 전체 학습 단계와 oof 예측에서도 동일하게 focal loss 적용 ---
+
+    # 전체 학습 (100%)
+    y = train_df['S1']
+    train_set = lgb.Dataset(X, label=y)
+
+    model = lgb.train(
+        best_param,
+        train_set,
+        fobj=focal_loss_lgb_multiclass(alpha=1.0, gamma=2.0, num_class=3),
+        num_boost_round=best_iteration_dict['S1'] if early_stop else 1000,
+        verbose_eval=False
+    )
+    multiclass_pred = np.argmax(model.predict(test_X), axis=1)
+
+    # --- feature importance 출력 등 기존 코드 유지 ---
+
+    # OOF 예측 시에도 동일하게 focal loss 적용
+    oof_preds = get_oof_predictions(X, y, best_param, n_splits=n_splits, is_multiclass=True, num_class=3, early_stop=early_stop, fobj=focal_loss_lgb_multiclass(...))
+    ...  # 이하 동일
+
+    return submission_final, oof_result
