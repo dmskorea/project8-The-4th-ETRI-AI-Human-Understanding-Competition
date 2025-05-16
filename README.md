@@ -4,9 +4,9 @@
 | #  |  valid  |  oof(k=5)  | test    |       내용       |          코드                  | 
 |----|---------|------------|--------|-------------------|--------------------------------|
 | -  |  0.6403 |   0.6755   | 0.61260| lightgbm -> tabpfn | etri-baseline-dm-v03.ipynb|
-| -  |  0.6419 |   0.6667   | 0.60828| ch5_sleeptime 이미지 파생변수 추가 | etri_baseline_v7141_v3_0_7.ipynb|
+| -  |  0.6419 |   0.6667   | 0.60828| ch5_sleeptime 이미지 추가 | etri_baseline_v7141_v3_0_7.ipynb|
 | -  |  0.6376 |   0.6620   |        | 추정휴가 파생변수 추가 | etri_baseline_v7141_v3_0_6.ipynb|
-| -  |  0.6439 |   0.6612   | 0.61513| mLight기반 수면시간 파생변수 추가 | etri_baseline_v7141_v3_0_4.ipynb|
+| -  |  0.6439 |   0.6612   | 0.61513| mLight기반 수면시간 추가 | etri_baseline_v7141_v3_0_4.ipynb|
 | -  |  0.6383 |   -   | 0.61617|lightgbm -> catboost 모델변경 | dacon-etri-lifelog-best-score-baseline-v3.ipynb|
 | -  |  0.6553 |   0.6585   | 0.62482|lightgbm+xgboost+catboost valid best score select | basic_sum_data_3_data_3_model_ensemble.ipynb|
 | 1  |  0.6359 |   0.6620   | 0.62832| 취침전 앱사용통계 파생변수 추가 | etri_baseline_v7141_v3_0_3.ipynb|
