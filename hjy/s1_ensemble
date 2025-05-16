@@ -1,0 +1,144 @@
+from lightgbm import LGBMClassifier, early_stopping
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import f1_score
+import pandas as pd
+import numpy as np
+from category_encoders import TargetEncoder
+
+def run_basemodel(train, test, valid_ids, common_params, best_param_dict, n_splits, random_state=42, early_stop=False):
+    train_df = train.copy()
+    test_df = test.copy()
+
+    submission_final = test_df[['subject_id', 'sleep_date', 'lifelog_date']].copy()
+    submission_final['lifelog_date'] = pd.to_datetime(submission_final['lifelog_date']).dt.date
+
+    targets_binary = ['Q1', 'Q2', 'Q3', 'S2', 'S3']
+    targets_binary_name = ['기상직후수면질', '취침전신체적피로', '취침전스트레스', '수면효율', '수면잠들기시간']
+    target_multiclass = 'S1'
+    all_targets = targets_binary + [target_multiclass]
+
+    # 타겟 인코딩
+    def add_noise(series, noise_level, seed=3):
+        rng = np.random.default_rng(seed)
+        return series * (1 + noise_level * rng.standard_normal(len(series)))
+
+    noise_level = 0.015
+    for tgt in all_targets:
+        encoder_feats = ['subject_id','month','weekend']
+        subject_mean = train_df.groupby(encoder_feats)[tgt].mean().rename(f'{tgt}_te')
+        train_df = train_df.merge(subject_mean, on=encoder_feats, how='left')
+        test_df = test_df.merge(subject_mean, on=encoder_feats, how='left')
+        global_mean = train_df[tgt].mean()
+        test_df[f'{tgt}_te'] = test_df[f'{tgt}_te'].fillna(global_mean)
+        train_df[f'{tgt}_te'] = add_noise(train_df[f'{tgt}_te'], noise_level)
+        test_df[f'{tgt}_te'] = add_noise(test_df[f'{tgt}_te'], noise_level)
+
+        train_df['TMP'] = train_df[encoder_feats].applymap(str).agg(''.join, axis=1)
+        test_df['TMP'] = test_df[encoder_feats].applymap(str).agg(''.join, axis=1)
+
+        encoder = TargetEncoder(cols=['TMP'], smoothing=300)
+        encoder.fit(train_df[['TMP']], train_df[tgt])
+        train_df[f'{tgt}_te2'] = add_noise(encoder.transform(train_df[['TMP']]), noise_level)
+        test_df[f'{tgt}_te2'] = add_noise(encoder.transform(test_df[['TMP']]), noise_level)
+
+        train_df = train_df.drop(columns=['TMP'])
+        test_df = test_df.drop(columns=['TMP'])
+
+    # 인코딩
+    PK = ['sleep_date', 'lifelog_date', 'subject_id']
+    encoder = LabelEncoder()
+    categorical_features = [col for col in train_df.select_dtypes(include=['object']) if col not in PK + ['pk']]
+    for col in categorical_features:
+        train_df[col] = encoder.fit_transform(train_df[col])
+        test_df[col] = encoder.transform(test_df[col])
+
+    # Feature 설정
+    X = train_df.drop(columns=PK + all_targets)
+    test_X = test_df.drop(columns=PK + all_targets)
+    print(f'# X shape: {X.shape}')
+    print(f'# test_X shape: {test_X.shape}')
+
+    # Validation F1 측정
+    valid_ids['pk'] = valid_ids['subject_id'] + valid_ids['sleep_date']
+    train_df['pk'] = train_df['subject_id'] + train_df['sleep_date']
+
+    total_avg_f1s = []
+    best_iteration_temp = {k: [] for k in all_targets}
+    val_f1 = []
+
+    for col in targets_binary:
+        y = train_df[col]
+        X_valid = train_df.loc[train_df['pk'].isin(valid_ids['pk']), X.columns].reset_index(drop=True)
+        X_train = train_df.loc[~train_df['pk'].isin(valid_ids['pk']), X.columns].reset_index(drop=True)
+        y_valid = y.loc[X_valid.index].reset_index(drop=True)
+        y_train = y.loc[X_train.index].reset_index(drop=True)
+
+        best_param = best_param_dict[col].copy()
+        best_param['random_state'] = random_state
+        model = LGBMClassifier(**best_param)
+
+        if early_stop:
+            model.fit(X_train, y_train,
+                      eval_set=[(X_train, y_train), (X_valid, y_valid)],
+                      callbacks=[early_stopping(100, verbose=False)])
+            best_iteration_temp[col].append(model.best_iteration_)
+        else:
+            model.fit(X_train, y_train)
+            best_iteration_temp[col].append(1000)
+
+        pred_valid = model.predict(X_valid)
+        f1 = f1_score(y_valid, pred_valid, average='macro')
+        val_f1.append(f1)
+
+    # === S1 분리 앙상블 모델 적용 (0/1 vs 2) ===
+
+    # Step 1: binary model for class 2 vs not-2
+    s1_binary_y = (train_df['S1'] == 2).astype(int)
+    binary_model = LGBMClassifier(**best_param_dict['S1'], random_state=random_state)
+    binary_model.fit(X, s1_binary_y)
+    binary_proba = binary_model.predict_proba(test_X)[:, 1]  # P(class=2)
+
+    # Step 2: multi model for class 0 vs 1 only (train S1 != 2)
+    s1_mask = train_df['S1'] != 2
+    s1_binary_01 = train_df.loc[s1_mask, 'S1']
+    X_01 = X.loc[s1_mask]
+
+    multi01_model = LGBMClassifier(**best_param_dict['S1'], random_state=random_state)
+    multi01_model.fit(X_01, s1_binary_01)
+    multi01_proba = multi01_model.predict_proba(test_X)  # shape: (N, 2) => class 0, 1
+
+    # Step 3: 앙상블 조합 (soft voting)
+    s1_pred = []
+    for i in range(len(test_X)):
+        p2 = binary_proba[i]  # 확률: class 2
+        p01 = multi01_proba[i] * (1 - p2)  # class 0,1 확률 재조정
+        final_proba = np.append(p01, p2)  # 최종 확률: [p0, p1, p2]
+        s1_pred.append(np.argmax(final_proba))  # 가장 확률 높은 클래스 선택
+
+    val_f1.append(np.nan)  # S1의 valid 성능은 생략 (필요 시 계산 가능)
+    avg_f1 = np.nanmean(val_f1)
+    total_avg_f1s.append(avg_f1)
+
+    print(f'평균 F1: {avg_f1:.4f} / [상세] ' + ' '.join([f'{name}({label}):{score:.4f}' for name, label, score in zip(targets_binary, targets_binary_name, val_f1[:-1])]))
+    print(f'# 전체 평균 F1: {avg_f1:.4f}')
+
+    # STEP2: 전체 데이터 학습
+    print('STEP2: 전체 데이터로 학습 및 예측')
+
+    binary_preds = {}
+    for col in targets_binary:
+        model = LGBMClassifier(**best_param_dict[col], random_state=random_state)
+        model.fit(X, train_df[col])
+        binary_preds[col] = model.predict(test_X)
+
+    submission_final['S1'] = s1_pred
+    for col in targets_binary:
+        submission_final[col] = binary_preds[col]
+
+    submission_final = submission_final[['subject_id', 'sleep_date', 'lifelog_date', 'Q1', 'Q2', 'Q3', 'S1', 'S2', 'S3']]
+    fname = f\"/content/drive/MyDrive/data/submission_{avg_f1:.4f}.csv\"
+    submission_final.to_csv(fname, index=False)
+    print(f\"# {fname} 저장 완료\")
+    print(f\"# submission shape: {submission_final.shape}\")
+
+    return submission_final
