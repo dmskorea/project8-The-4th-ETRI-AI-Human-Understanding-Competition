@@ -15,7 +15,7 @@
 | 6  |  0.6172 |   0.6463   | 0.60724| 수면시간 lag1, rolling 변수추가 | etri_baseline_v7141_v3_0_0.ipynb|
 | 6  |  0.6076 |   0.6540   | 0.60622| NaN -> -1 일괄치환      |dacon-etri-lifelog-best-score-baseline-v2.ipynb|
 | 5  |  0.6069 |   0.6491   | 0.60523| 로컬검증 변경      |etri_baseline_v7141_v2.0.0.ipynb|
-| 7  |  0.7769 |   0.7679   | 0.52101| target encoding weekend -> weekday      |둘다 개선되었으나 퍼블릭 리더보드 하락함 (과적합)|
+| 7  |  0.7769 |   0.7679   | 0.52101| target encoding weekend -> weekday      |둘다 개선 퍼블릭 리더보드 하락|
 
 ![image](https://github.com/user-attachments/assets/89636ed3-3911-4b35-b852-f09efb31a666)
 
