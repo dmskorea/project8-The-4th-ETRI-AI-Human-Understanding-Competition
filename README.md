@@ -10,6 +10,7 @@
 | -  |  0.6383 |   -  | 0.61617|lightgbm -> catboost 모델변경 | dacon-etri-lifelog-best-score-baseline-v3.ipynb|
 | -  |  0.6351 |   0.6584    | 0.62574|lightgbm -> xgboost 모델변경 | dacon-etri-lifelog-best-score-baseline-v3-xgboost.ipynb|
 | -  |  0.6553 |   0.6585   | 0.62482|lightgbm+xgboost+catboost valid best score select | basic_sum_data_3_data_3_model_ensemble.ipynb|
+| -  |  - |   0.626979   | 0.62482|lightgbm+xgboost+catboost hard voting | basic_sum_data_3_hard_voting.ipynb|
 | 1  |  0.6359 |   0.6620   | 0.62832| 취침전 앱사용통계 파생변수 추가 | etri_baseline_v7141_v3_0_3.ipynb|
 | 2  |  0.6322 |   0.6595   | 0.62305| 수면시간 평균 산출로직 변경  | etri_baseline_v7141_v3_0_2.ipynb|
 | 4  |  0.6308 |   0.6526   | 0.6176 | parameter common으로 변경  | etri_baseline_v7141_v3_0_1.ipynb|
