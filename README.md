@@ -8,6 +8,7 @@
 | -  |  0.6376 |   0.6620   |        | 추정휴가 파생변수 추가 | etri_baseline_v7141_v3_0_6.ipynb|
 | -  |  0.6439 |   0.6612   | 0.61513| mLight기반 수면시간 추가 | etri_baseline_v7141_v3_0_4.ipynb|
 | -  |  0.6383 |   -  | 0.61617|lightgbm -> catboost 모델변경 | dacon-etri-lifelog-best-score-baseline-v3.ipynb|
+| -  |  0.6588 |   0.6632  | 0.61871|lightgbm -> catboost 모델변경 (일반 파라미터, S1 class weight 적용) | dacon-etri-lifelog-best-score-baseline-v3.ipynb|
 | -  |  0.6351 |   0.6584    | 0.62574|lightgbm -> xgboost 모델변경 | dacon-etri-lifelog-best-score-baseline-v3-xgboost.ipynb|
 | -  |  0.6553 |   0.6585   | 0.62482|lightgbm+xgboost+catboost valid best score select | basic_sum_data_3_data_3_model_ensemble.ipynb|
 | -  |  - |   -   | 0.62697 |lightgbm+xgboost+catboost hard voting | basic_sum_data_3_hard_voting.ipynb|
