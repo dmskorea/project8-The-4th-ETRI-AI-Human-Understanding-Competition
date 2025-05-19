@@ -14,6 +14,7 @@
 | -  |  - |   -   | 0.62697 |lightgbm+xgboost+catboost hard voting | basic_sum_data_3_hard_voting.ipynb|
 | -  |  - |   -   | 0.62263 |lightgbm+xgboos 9:1 soft voting | basic_sum_data_2_data_ensemble_softvoting.ipynb|
 | -  |  - |   -   | 0.62432 |lightgbm+xgboost 7:3 soft voting | basic_sum_data_2_data_ensemble_softvoting.ipynb|
+| -  |  0.6438 |   0.6631   | 0.62499 |lightgbm+xgboost 5:5 soft voting | dacon-etri-lifelog-best-score-v3-lightgbm-xgboost-2model-pv.ipynb|
 | 1  |  0.6359 |   0.6620   | 0.62832| 취침전 앱사용통계 파생변수 추가 | etri_baseline_v7141_v3_0_3.ipynb|
 | 2  |  0.6322 |   0.6595   | 0.62305| 수면시간 평균 산출로직 변경  | etri_baseline_v7141_v3_0_2.ipynb|
 | 4  |  0.6308 |   0.6526   | 0.6176 | parameter common으로 변경  | etri_baseline_v7141_v3_0_1.ipynb|
