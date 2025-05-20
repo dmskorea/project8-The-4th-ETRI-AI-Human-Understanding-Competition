@@ -5,12 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "category-encoders>=2.8.1",
     "fastparquet>=2024.11.0",
+    "haversine>=2.9.0",
     "ipykernel>=6.29.5",
     "lightgbm>=4.6.0",
+    "optuna>=4.3.0",
     "pandas>=2.2.3",
     "pyarrow>=20.0.0",
     "scikit-learn>=1.6.1",
     "setuptools>=80.3.1",
+    "torch>=2.7.0",
     "ydata-profiling>=4.16.1",
 ]
