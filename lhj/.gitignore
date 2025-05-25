@@ -178,3 +178,6 @@ data/
 *.csv
 
 results/
+
+*.pt
+*.npy
