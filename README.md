@@ -16,14 +16,15 @@
 | -  |  - |   -   | 0.62432 |lightgbm+xgboost 7:3 soft voting | basic_sum_data_2_data_ensemble_softvoting.ipynb|
 | -  |  0.6438 |   0.6631   | 0.62499 |lightgbm+xgboost 5:5 soft voting | dacon-etri-lifelog-best-score-v3-lightgbm-xgboost-2model-pv.ipynb|
 | 1  |  0.6242 |   -  | 0.63104| etri_baseline_v7_1_1 codebase / lightgbm+xgboost+catboost 3:3:4 soft voting / catboost 2000 / class weight 적용 | dacon-etri-lifelog-v4-3-model-weight-class.ipynb|
-| 2  |  0.6451 |   0.6611   | 0.62917| lightgbm+xgboost+catboost 3:3:4 soft voting (라벨인코딩 수정전) | dacon-etri-lifelog-best-score-v3-3-model-pv.ipynb|
-| 3  |  0.6359 |   0.6620   | 0.62832| 취침전 앱사용통계 파생변수 추가 | etri_baseline_v7141_v3_0_3.ipynb|
-| 4  |  0.6322 |   0.6595   | 0.62305| 수면시간 평균 산출로직 변경  | etri_baseline_v7141_v3_0_2.ipynb|
-| 6  |  0.6308 |   0.6526   | 0.6176 | parameter common으로 변경  | etri_baseline_v7141_v3_0_1.ipynb|
-| 8  |  0.6172 |   0.6463   | 0.60724| 수면시간 lag1, rolling 변수추가 | etri_baseline_v7141_v3_0_0.ipynb|
-| 8  |  0.6076 |   0.6540   | 0.60622| NaN -> -1 일괄치환      |dacon-etri-lifelog-best-score-baseline-v2.ipynb|
-| 9  |  0.6069 |   0.6491   | 0.60523| 로컬검증 변경      |etri_baseline_v7141_v2.0.0.ipynb|
-| 9  |  0.7769 |   0.7679   | 0.52101| target encoding weekend -> weekday      |둘다 개선 퍼블릭 리더보드 하락|
+| 2  |  0.6255 |   -  | 0.62966| etri_baseline_v7_1_1 codebase / lightgbm+xgboost+catboost 3:3:4 soft voting / catboost 1900 / class weight 적용 | - |
+| 3  |  0.6451 |   0.6611   | 0.62917| lightgbm+xgboost+catboost 3:3:4 soft voting (라벨인코딩 수정전) | dacon-etri-lifelog-best-score-v3-3-model-pv.ipynb|
+| 4  |  0.6359 |   0.6620   | 0.62832| 취침전 앱사용통계 파생변수 추가 | etri_baseline_v7141_v3_0_3.ipynb|
+| 5  |  0.6322 |   0.6595   | 0.62305| 수면시간 평균 산출로직 변경  | etri_baseline_v7141_v3_0_2.ipynb|
+| 7  |  0.6308 |   0.6526   | 0.6176 | parameter common으로 변경  | etri_baseline_v7141_v3_0_1.ipynb|
+| 9  |  0.6172 |   0.6463   | 0.60724| 수면시간 lag1, rolling 변수추가 | etri_baseline_v7141_v3_0_0.ipynb|
+| 9  |  0.6076 |   0.6540   | 0.60622| NaN -> -1 일괄치환      |dacon-etri-lifelog-best-score-baseline-v2.ipynb|
+| 10  |  0.6069 |   0.6491   | 0.60523| 로컬검증 변경      |etri_baseline_v7141_v2.0.0.ipynb|
+| 11  |  0.7769 |   0.7679   | 0.52101| target encoding weekend -> weekday      |둘다 개선 퍼블릭 리더보드 하락|
 
 ![image](https://github.com/user-attachments/assets/85620ffd-d7ac-4b99-ad74-f58a44d7a8d9)
 
