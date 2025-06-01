@@ -15,7 +15,10 @@ warnings.filterwarnings('ignore')
 
 
 def main(args): 
+    print(f'Tabsyn train start on {"CUDA" if torch.cuda.is_available() else "CPU"}')
     device = args.device
+
+    num_epochs = args.num_epochs
 
     train_z, _, _, ckpt_path, _ = get_input_train(args)
 
@@ -39,9 +42,6 @@ def main(args):
         shuffle = True,
         num_workers = 4,
     )
-
-    num_epochs = 10000 + 1
-    num_epochs = 10000 + 1
 
     denoise_fn = MLPDiffusion(in_dim, 1024).to(device)
     print(denoise_fn)

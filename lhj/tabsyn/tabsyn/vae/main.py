@@ -59,6 +59,8 @@ def main(args):
     max_beta = args.max_beta
     min_beta = args.min_beta
     lambd = args.lambd
+    num_epochs = args.num_epochs
+
 
     device =  args.device
 
@@ -114,8 +116,6 @@ def main(args):
     optimizer = torch.optim.Adam(model.parameters(), lr=LR, weight_decay=WD)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.95, patience=10)
 
-    num_epochs = 4000
-    num_epochs = 4000
     best_train_loss = float('inf')
 
     current_lr = optimizer.param_groups[0]['lr']
