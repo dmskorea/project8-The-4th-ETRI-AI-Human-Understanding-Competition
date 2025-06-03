@@ -1,0 +1,138 @@
+from h2o.automl import H2OAutoML
+import h2o
+h2o.init()
+
+def run_basemodel(train, test, valid_ids, common_params, meta_weights, n_splits, random_state=42, submit=False, get_oof=False):
+    from lightgbm import LGBMClassifier
+    from sklearn.metrics import f1_score
+    from sklearn.preprocessing import LabelEncoder
+    import pandas as pd
+    import numpy as np
+
+    def to_h2o(df):
+        return h2o.H2OFrame(df)
+
+    def train_h2o_automl(X_train, y_train, max_models=100):
+        df = X_train.copy()
+        df[y_train.name] = y_train
+        hf = to_h2o(df)
+        hf[y_train.name] = hf[y_train.name].asfactor()
+
+        aml = H2OAutoML(max_models=max_models, seed=random_state)
+        aml.train(x=X_train.columns.tolist(), y=y_train.name, training_frame=hf)
+        return aml.leader
+
+    def predict_h2o(model, X, is_multiclass=False):
+        pred = model.predict(to_h2o(X)).as_data_frame(use_pandas=True, header=True)
+        if is_multiclass:
+            p_cols = [col for col in pred.columns if col.startswith('p') and col[1:].isdigit()]
+            return pred[p_cols].values
+        else:
+            return pred['p1'].values
+
+    lgb_A = meta_weights['lgb']
+    xgb_B = meta_weights['xgb']
+    train_df = train.copy()
+    test_df = test.copy()
+    submission_final = test[['subject_id', 'sleep_date', 'lifelog_date']].copy()
+    submission_final['lifelog_date'] = pd.to_datetime(submission_final['lifelog_date']).dt.date
+
+    targets_binary = ['Q1', 'Q2', 'Q3', 'S2', 'S3']
+    targets_binary_name = ['기상직후수면질','취침전신체적피로','취침전스트레스','수면효율','수면잠들기시간']
+    target_multiclass = 'S1'
+    all_targets = targets_binary + [target_multiclass]
+
+    total_avg_f1s = []
+    val_f1 = []
+
+    for col in targets_binary:
+        train_df = train.copy()
+        test_df = test.copy()
+        encoder_feats = ['subject_id','month','weekend2'] if col in ['Q2','S2','S3'] else ['subject_id','month','weekend']
+        train_df, test_df = run_encoding(train_df, test_df, all_targets, encoder_feats)
+
+        y = train_df[col]
+        PK = ['sleep_date', 'lifelog_date', 'subject_id']
+        encoder = LabelEncoder()
+        categorical_features = [i for i in train_df.select_dtypes(include=['object', 'category']).columns if i not in PK+['pk']]
+        for cc in categorical_features:
+            train_df[cc] = encoder.fit_transform(train_df[cc])
+            test_df[cc] = encoder.transform(test_df[cc])
+
+        X = train_df.drop(columns=PK + all_targets)
+        valid_ids['pk'] = valid_ids['subject_id']+valid_ids['sleep_date']
+        train_df['pk'] = train_df['subject_id']+train_df['sleep_date']
+
+        X_valid = train_df[train_df['pk'].isin(valid_ids['pk'])][X.columns].reset_index(drop=True)
+        X_train = train_df[~train_df['pk'].isin(valid_ids['pk'])][X.columns].reset_index(drop=True)
+        y_valid = train_df[train_df['pk'].isin(valid_ids['pk'])][y.name].reset_index(drop=True)
+        y_train = train_df[~train_df['pk'].isin(valid_ids['pk'])][y.name].reset_index(drop=True)
+
+        lgb_params = common_params[col].copy()
+        lgb_params['random_state'] = random_state
+        lgb_model = LGBMClassifier(**lgb_params)
+        lgb_model.fit(X_train, y_train)
+
+        fi_df = pd.DataFrame({'feature': X.columns, 'importance': lgb_model.feature_importances_})
+        top10 = fi_df.sort_values(by='importance', ascending=False).head(10)
+        feat_str = ", ".join([f"{row['feature']}({int(row['importance'])})" for _, row in top10.iterrows()])
+        print(f"[{col}] {feat_str}")
+
+        aml_model = train_h2o_automl(X_train, y_train, max_models=100)
+
+        lgb_pred_valid = lgb_model.predict_proba(X_valid)[:, 1]
+        aml_pred_valid = predict_h2o(aml_model, X_valid)
+
+        pred_valid = (lgb_A * lgb_pred_valid + xgb_B * aml_pred_valid > 0.5).astype(int)
+        f1 = f1_score(y_valid, pred_valid, average='macro')
+        val_f1.append(f1)
+
+    train_df = train.copy()
+    test_df = test.copy()
+    y = train_df[target_multiclass]
+    train_df, test_df = run_encoding(train_df, test_df, all_targets, ['subject_id','month','weekend2'])
+
+    PK = ['sleep_date', 'lifelog_date', 'subject_id']
+    encoder = LabelEncoder()
+    categorical_features = [i for i in train_df.select_dtypes(include=['object', 'category']).columns if i not in PK+['pk']]
+    for cc in categorical_features:
+        train_df[cc] = encoder.fit_transform(train_df[cc])
+        test_df[cc] = encoder.transform(test_df[cc])
+
+    X = train_df.drop(columns=PK + all_targets)
+    valid_ids['pk'] = valid_ids['subject_id']+valid_ids['sleep_date']
+    train_df['pk'] = train_df['subject_id']+train_df['sleep_date']
+
+    X_valid = train_df[train_df['pk'].isin(valid_ids['pk'])][X.columns].reset_index(drop=True)
+    X_train = train_df[~train_df['pk'].isin(valid_ids['pk'])][X.columns].reset_index(drop=True)
+    y_valid = train_df[train_df['pk'].isin(valid_ids['pk'])][y.name].reset_index(drop=True)
+    y_train = train_df[~train_df['pk'].isin(valid_ids['pk'])][y.name].reset_index(drop=True)
+
+    lgb_params = common_params['S1'].copy()
+    lgb_params['random_state'] = random_state
+    lgb_model = LGBMClassifier(**lgb_params, objective='multiclass', num_class=3)
+    lgb_model.fit(X_train, y_train)
+
+    fi_df = pd.DataFrame({'feature': X.columns, 'importance': lgb_model.feature_importances_})
+    top10 = fi_df.sort_values(by='importance', ascending=False).head(10)
+    feat_str = ", ".join([f"{row['feature']}({int(row['importance'])})" for _, row in top10.iterrows()])
+    print(f"[S1] {feat_str}")
+
+    aml_model = train_h2o_automl(X_train, y_train, max_models=100)
+
+    lgb_pred_valid = lgb_model.predict_proba(X_valid)
+    aml_pred_valid = predict_h2o(aml_model, X_valid, is_multiclass=True)
+
+    min_cols = min(lgb_pred_valid.shape[1], aml_pred_valid.shape[1])
+    pred_valid = np.argmax(lgb_A * lgb_pred_valid[:, :min_cols] + xgb_B * aml_pred_valid[:, :min_cols], axis=1)
+
+    f1 = f1_score(y_valid, pred_valid, average='macro')
+    val_f1.append(f1)
+
+    avg_f1 = np.mean(val_f1)
+    total_avg_f1s.append(avg_f1)
+    detail = " ".join([f"{name}({tname}):{score:.4f}" for name, tname, score in zip(targets_binary + [target_multiclass], targets_binary_name + ['수면시간'], val_f1)])
+    print(f"# 평균 F1: {avg_f1:.4f} / [상세] {detail}")
+    print(f"# 전체 평균 F1: {np.mean(total_avg_f1s):.4f}")
+
+    return submission_final, np.mean(total_avg_f1s)
