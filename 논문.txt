@@ -18,19 +18,14 @@ III. PROPOSED METHODS
 
 2. 제안 
 
-[제안1]
-ㅅ=- - - - 
+[제안1] 데이터 증강 
+- 생성형AI를 활용하여 결측데이터 생성 
 
-
-
-
-
-
-제안
-
-
-
-
+[제안2] 생성형 AI 모델 앙상블 
+- 생성형A를 활용하여 예측 타겟 6개 간의 관계를 학습하여 모델 앙상블 시도 
+2.1 fine tunning  
+2.2 few shot learning 
+2.3 post processing 
 
 IV. EXPERIMENTS
 
