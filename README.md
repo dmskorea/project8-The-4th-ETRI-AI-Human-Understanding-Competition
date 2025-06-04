@@ -26,8 +26,10 @@
 | 10  |  0.6069 |   0.6491   | 0.60523| 로컬검증 변경      |etri_baseline_v7141_v2.0.0.ipynb|
 | 11  |  0.7769 |   0.7679   | 0.52101| target encoding weekend -> weekday      |둘다 개선 퍼블릭 리더보드 하락|
 
-   ### 
-![image](https://github.com/user-attachments/assets/af0131dc-e228-4c77-a8e7-482c6e9e43eb)
+### 모델구조
+
+![image](https://github.com/user-attachments/assets/bd51832c-62df-488d-b06a-5542780ec6c5)
+
 
 ![image](https://github.com/user-attachments/assets/85620ffd-d7ac-4b99-ad74-f58a44d7a8d9)
 
