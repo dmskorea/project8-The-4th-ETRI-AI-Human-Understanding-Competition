@@ -1,0 +1,61 @@
+import pandas as pd
+
+# Sample data
+data = {
+    'subject_id': ['id01', 'id01', 'id01', 'id01', 'id01'],
+    'sleep_date': ['2024-06-27', '2024-06-28', '2024-06-29', '2024-06-30', '2024-07-01'],
+    'lifelog_date': ['2024-06-26', '2024-06-27', '2024-06-28', '2024-06-29', '2024-06-30'],
+    '월': ['2024-06', '2024-06', '2024-06', '2024-06', '2024-06'],
+    '요일': ['수', '목', '금', '토', '일'],
+    'Q1': [0, 0, 1, 1, 0],
+    'Q2': [0, 0, 0, 0, 1],
+    'Q3': [0, 0, 0, 1, 1],
+    'QSM': [0, 0, 0, 2, 2],
+    'S1': [0, 0, 1, 2, 1],
+    'S2': [0, 1, 1, 0, 1],
+    'S3': [1, 1, 1, 0, 1],
+    'SSM': [1, 2, 3, 2, 3]
+}
+
+df = pd.DataFrame(data)
+
+df['Q1'] = df['Q1'].astype(float)
+df['Q2'] = df['Q2'].astype(float)
+df['Q3'] = df['Q3'].astype(float)
+df['S1'] = df['S1'].astype(float)
+df['S2'] = df['S2'].astype(float)
+df['S3'] = df['S3'].astype(float)
+
+# Define target columns
+target_cols = ['Q1', 'Q2', 'Q3', 'S1', 'S2', 'S3']
+
+# Step 1: Find top 2 days for each subject_id and target
+top_days_dict = {}
+for subject_id in df['subject_id'].unique():
+    for target in target_cols:
+        df_subject = df[df['subject_id'] == subject_id]
+        avg_scores = df_subject.groupby('요일')[target].mean().reset_index()
+        top_2 = avg_scores.sort_values(target, ascending=False).head(2)
+        top_days_dict[(subject_id, target)] = set(top_2['요일'].tolist())
+
+# Step 2: Create binary features
+for target in target_cols:
+    df[f'is_top_day_{target}'] = df.apply(
+        lambda row: row['요일'] in top_days_dict.get((row['subject_id'], target), set()), 
+        axis=1
+    )
+
+# Step 3: Target encoding with both mean and sum
+for target in target_cols:
+    encoding_mean_col = f'{target}_mean_encoding'
+    encoding_sum_col = f'{target}_sum_encoding'
+    
+    # Calculate mean and sum for each group
+    encoding = df.groupby(['subject_id', '월', f'is_top_day_{target}'])[target].agg(['mean', 'sum']).reset_index()
+    encoding = encoding.rename(columns={'mean': encoding_mean_col, 'sum': encoding_sum_col})
+    
+    # Merge back to original dataframe
+    df = pd.merge(df, encoding, on=['subject_id', '월', f'is_top_day_{target}'], how='left')
+
+# The final dataframe now contains the target encodings
+df.head()
