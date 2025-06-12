@@ -3,7 +3,7 @@
 
 | #  |  valid  |  oof(k=5)  | test    |       내용       |          코드                            | 
 |----|---------|------------|---------|------------------|------------------------------------------|
-| 1  |  0.6492 |            | 0.63775 |                  | dacon-etri-lifelog-best-tabpfn-llm.ipynb |
+| 1  |  0.6492 |            | 0.63775 | lgb+xgb+tabpfn   | dacon-etri-lifelog-best-tabpfn-llm.ipynb |
 
 
 ### 📦로컬 리더보드 (old)
