@@ -3,7 +3,7 @@
 
 | #  |  valid  |  oof(k=5)  | test    |       내용       |          코드                            | 
 |----|---------|------------|---------|------------------|------------------------------------------|
-| 1  |  0.6492 |            | 0.63775 | lgb+xgb+tabpfn   | dacon-etri-lifelog-best-tabpfn-llm.ipynb |
+| 1  |  0.6492 |            | 0.63775 | Rank 1:  lgb_A=0.2, xgb_B=0.4, tabpfn_C=0.0, llm_D=0.4   | dacon-etri-lifelog-best-tabpfn-llm.ipynb |
 
 
 ### 📦로컬 리더보드 (old)
