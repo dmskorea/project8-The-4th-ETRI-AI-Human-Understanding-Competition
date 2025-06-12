@@ -6,6 +6,15 @@
 | 1  |  0.6492 |            | 0.63775 | Rank 1:  lgb_A=0.2, xgb_B=0.4, tabpfn_C=0.0, llm_D=0.4   | dacon-etri-lifelog-best-tabpfn-llm.ipynb |
 
 <br>
+Trying weights: lgb_A=0.2, xgb_B=0.4, tabpfn_C=0.0, llm_D=0.4
+ Validation Score Q1:0.7163
+ Validation Score Q2:0.7867
+ Validation Score Q3:0.6581
+ Validation Score S2:0.5726
+ Validation Score S3:0.6970
+ Validation Score S1:0.4647
+Average Validation Score: 0.6492
+<br>
 
 ### 📦로컬 리더보드 (old)
 - submit 기준 : 로컬 리더보드 valid, oof(k=5) 보다 성능 향상 된 경우
