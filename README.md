@@ -4,6 +4,7 @@
 | #  |  valid  |  oof(k=5)  | test    |       내용       |          코드                            | 
 |----|---------|------------|---------|------------------|------------------------------------------|
 | 1  |  0.6492 |            | 0.63775 | Rank 1:  lgb_A=0.2, xgb_B=0.4, tabpfn_C=0.0, llm_D=0.4   | dacon-etri-lifelog-best-tabpfn-llm.ipynb |
+| 2  |  0.7218 |            | 0.63367 |  | |
 
 <br>
 Trying weights: lgb_A=0.2, xgb_B=0.4, tabpfn_C=0.0, llm_D=0.4<br>
