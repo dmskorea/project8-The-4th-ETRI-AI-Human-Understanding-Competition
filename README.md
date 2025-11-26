@@ -1,3 +1,6 @@
+<img width="918" height="412" alt="image" src="https://github.com/user-attachments/assets/03403567-4d69-4303-8546-5ed487294be0" />
+
+
 ### 📦로컬 리더보드 (new!!)
 - submit 기준 : 로컬 리더보드 valid, oof(k=5) 보다 성능 향상 된 경우
 
